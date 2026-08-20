@@ -232,6 +232,102 @@
           "container": "/data"
         }
       ]
+    },
+    {
+      "categories": [
+        "DNS",
+        "Networking",
+        "Tools"
+      ],
+      "description": "External-DNS for plain Docker hosts: watches running containers, reads dockroute.* labels and reconciles the matching DNS records \u2014 and Cloudflare Tunnel routes \u2014 in a pluggable provider. TXT-based ownership means it never alters records it cannot prove it manages. Source: https://github.com/Dockroute/Dockroute",
+      "env": [
+        {
+          "default": "log",
+          "label": "DNS provider ('log' is a credential-free dry run that only prints the desired state)",
+          "name": "DOCKROUTE_PROVIDER",
+          "select": [
+            {
+              "default": true,
+              "text": "log (dry run, no credentials)",
+              "value": "log"
+            },
+            {
+              "text": "cloudflare",
+              "value": "cloudflare"
+            }
+          ]
+        },
+        {
+          "default": "default",
+          "label": "Ownership id written to companion TXT records (lets several instances share a zone safely)",
+          "name": "DOCKROUTE_OWNER_ID"
+        },
+        {
+          "default": "sync",
+          "label": "Sync policy \u2014 sync creates/updates/deletes owned records, upsert-only never deletes, create-only never updates or deletes",
+          "name": "DOCKROUTE_POLICY",
+          "select": [
+            {
+              "default": true,
+              "text": "sync",
+              "value": "sync"
+            },
+            {
+              "text": "upsert-only",
+              "value": "upsert-only"
+            },
+            {
+              "text": "create-only",
+              "value": "create-only"
+            }
+          ]
+        },
+        {
+          "default": "",
+          "label": "Default target \u2014 fallback record value (IP or CNAME target) when a container omits the dockroute.target label",
+          "name": "DOCKROUTE_DEFAULT_TARGET"
+        },
+        {
+          "default": "",
+          "label": "Domain filter \u2014 comma-separated allowlist of DNS zones DockRoute may touch (blank = every zone the token can see)",
+          "name": "DOCKROUTE_DOMAIN_FILTER"
+        },
+        {
+          "default": "60",
+          "label": "Resync interval in seconds (periodic full reconcile that backs up the event stream)",
+          "name": "DOCKROUTE_RESYNC_SECONDS"
+        },
+        {
+          "default": "",
+          "label": "Cloudflare API token \u2014 required when provider is cloudflare (Zone \u2192 DNS \u2192 Edit)",
+          "name": "CLOUDFLARE_API_TOKEN"
+        },
+        {
+          "default": "",
+          "label": "Cloudflare account ID (only needed for Cloudflare Tunnel publishing)",
+          "name": "CLOUDFLARE_ACCOUNT_ID"
+        },
+        {
+          "default": "",
+          "label": "Cloudflare tunnel ID \u2014 an existing tunnel; you keep running cloudflared yourself (only needed for Tunnel publishing)",
+          "name": "CLOUDFLARE_TUNNEL_ID"
+        }
+      ],
+      "image": "ghcr.io/dockroute/dockroute:latest",
+      "logo": "https://avatars.githubusercontent.com/u/309590892",
+      "name": "dockroute",
+      "note": "Deploys with zero configuration: the entrypoint grants the app user the Docker socket's group and drops privileges before starting, and the default 'log' provider is a dry run that needs no credentials. Once the output looks right, switch DOCKROUTE_PROVIDER to cloudflare and set CLOUDFLARE_API_TOKEN. Opt containers in with the labels dockroute.enabled=true and dockroute.hostname=app.example.com. Docs: https://www.dockroute.dev",
+      "platform": "linux",
+      "restart_policy": "unless-stopped",
+      "title": "DockRoute",
+      "type": 1,
+      "volumes": [
+        {
+          "bind": "/var/run/docker.sock",
+          "container": "/var/run/docker.sock",
+          "readonly": true
+        }
+      ]
     }
   ],
   "version": "3"
