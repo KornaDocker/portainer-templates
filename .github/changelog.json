@@ -1,6 +1,22 @@
 {
   "entries": [
     {
+      "version": "v1.2.1",
+      "previous": "v1.2.0",
+      "date": "2026-09-03",
+      "templateCount": 683,
+      "added": [],
+      "removed": [],
+      "updated": [
+        {
+          "title": "Cantinarr",
+          "fields": [
+            "description"
+          ]
+        }
+      ]
+    },
+    {
       "version": "v1.2.0",
       "previous": "v1.1.3",
       "date": "2026-09-01",
