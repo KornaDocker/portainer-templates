@@ -318,7 +318,7 @@
         "Productivity",
         "Project Management"
       ],
-      "description": "Client portal for agencies and freelancers. Share project progress, files, updates, tasks and invoices with clients through a branded portal. Source: https://github.com/Vibra-Labs/Atrium",
+      "description": "Client portal for agencies and freelancers. Share project progress, files, tasks and invoices through a branded portal. Source: https://github.com/Vibra-Labs/Atrium",
       "env": [
         {
           "label": "Auth secret, min 32 chars \u2014 generate with: openssl rand -base64 32",
@@ -368,7 +368,7 @@
       "image": "vibralabs/atrium:latest",
       "logo": "https://avatars.githubusercontent.com/u/258646867",
       "name": "atrium",
-      "note": "Ships with a built-in PostgreSQL database, so no separate container is needed \u2014 leave the database URL blank to use it. The auth secret is required and must be at least 32 characters; the container exits on startup without it. Serving over plain HTTP without a reverse proxy requires secure cookies set to false, otherwise sign-in fails with a CSRF error.",
+      "note": "Needs an auth secret of at least 32 characters \u2014 the container exits on startup without one. Over plain HTTP set secure cookies to false, or sign-in fails with a CSRF error.",
       "platform": "linux",
       "ports": [
         "8080:8080/tcp"
