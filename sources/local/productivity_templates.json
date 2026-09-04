@@ -312,6 +312,78 @@
       },
       "title": "Pumperly",
       "type": 3
+    },
+    {
+      "categories": [
+        "Productivity",
+        "Project Management"
+      ],
+      "description": "Client portal for agencies and freelancers. Share project progress, files, updates, tasks and invoices with clients through a branded portal. Source: https://github.com/Vibra-Labs/Atrium",
+      "env": [
+        {
+          "label": "Auth secret, min 32 chars \u2014 generate with: openssl rand -base64 32",
+          "name": "BETTER_AUTH_SECRET"
+        },
+        {
+          "default": "http://localhost:8080",
+          "label": "Public URL the portal is served from \u2014 email invite and reset links are built from this",
+          "name": "WEB_URL"
+        },
+        {
+          "default": "http://localhost:8080",
+          "label": "Public API URL \u2014 same value, the image serves app and API from one origin",
+          "name": "API_URL"
+        },
+        {
+          "default": "true",
+          "label": "Secure cookies \u2014 set to false when serving over plain HTTP",
+          "name": "SECURE_COOKIES"
+        },
+        {
+          "default": "",
+          "label": "External PostgreSQL URL (optional, blank uses the built-in database)",
+          "name": "DATABASE_URL"
+        },
+        {
+          "default": "local",
+          "label": "Storage provider: local, s3, minio or r2",
+          "name": "STORAGE_PROVIDER"
+        },
+        {
+          "default": "50",
+          "label": "Max upload size in MB",
+          "name": "MAX_FILE_SIZE_MB"
+        },
+        {
+          "default": "",
+          "label": "Resend API key (optional, enables invite and reset emails)",
+          "name": "RESEND_API_KEY"
+        },
+        {
+          "default": "",
+          "label": "From address for outgoing email (optional)",
+          "name": "EMAIL_FROM"
+        }
+      ],
+      "image": "vibralabs/atrium:latest",
+      "logo": "https://avatars.githubusercontent.com/u/258646867",
+      "name": "atrium",
+      "note": "Ships with a built-in PostgreSQL database, so no separate container is needed \u2014 leave the database URL blank to use it. The auth secret is required and must be at least 32 characters; the container exits on startup without it. Serving over plain HTTP without a reverse proxy requires secure cookies set to false, otherwise sign-in fails with a CSRF error.",
+      "platform": "linux",
+      "ports": [
+        "8080:8080/tcp"
+      ],
+      "restart_policy": "unless-stopped",
+      "title": "Atrium",
+      "type": 1,
+      "volumes": [
+        {
+          "container": "/var/lib/postgresql/data"
+        },
+        {
+          "container": "/app/uploads"
+        }
+      ]
     }
   ],
   "version": "3"
