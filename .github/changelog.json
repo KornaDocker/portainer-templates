@@ -1,6 +1,17 @@
 {
   "entries": [
     {
+      "version": "v1.2.2",
+      "previous": "v1.2.1",
+      "date": "2026-09-04",
+      "templateCount": 684,
+      "added": [
+        "Atrium"
+      ],
+      "removed": [],
+      "updated": []
+    },
+    {
       "version": "v1.2.1",
       "previous": "v1.2.0",
       "date": "2026-09-03",
