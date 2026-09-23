@@ -45,8 +45,39 @@ def template_score(t):
   score += len(t.get('ports', []))
   return score
 
+def template_rank(t, pinned=None):
+  """Sort key for choosing between duplicates, higher wins: pinned source, then source
+  priority, then completeness."""
+  return (t['_source'] == pinned, -t['_priority'], template_score(t))
+
+def listed_sources():
+  """File names of the external sources in sources.csv, in the order listed."""
+  with open(os.path.join(BASE_DIR, 'sources.csv')) as f:
+    return [row[0].strip() + '.json' for row in csv.reader(f)
+            if len(row) > 1 and row[0].strip() and row[1].strip()]
+
+def load_overrides():
+  """Per-template fixes from overrides.json, keyed by (normalized title, type)."""
+  path = os.path.join(BASE_DIR, 'overrides.json')
+  if not os.path.isfile(path):
+    return {}
+  with open(path) as f:
+    try:
+      entries = json.load(f).get('overrides', [])
+    except json.decoder.JSONDecodeError as err:
+      log.error(f'Refusing to build: overrides.json is not valid JSON ({err})')
+      sys.exit(1)
+  return {(normalize_string(e['title']), e.get('type', 1)): e for e in entries
+          if isinstance(e, dict) and isinstance(e.get('title'), str) and e['title'].strip()}
+
+def pinned_source(overrides, key):
+  """The source file name an override pins this (title, type) to, if any."""
+  prefer = overrides.get(key, {}).get('prefer')
+  return f'{prefer}.json' if prefer else None
+
 def load_sources():
   """Load and merge all template JSON files from sources/local/ and sources/external/."""
+  rank = {name: i for i, name in enumerate(listed_sources(), start=1)}
   templates = []
   local_dir = os.path.join(SOURCES_DIR, 'local')
   external_dir = os.path.join(SOURCES_DIR, 'external')
@@ -64,9 +95,11 @@ def load_sources():
           log.warning(f'Skipping source due to error: {f.name} ({err})')
           continue
       source_templates = [t for t in source_templates if isinstance(t, dict)]
+      # Dedup priority: local files first, then external sources in sources.csv order
+      priority = 0 if is_local else rank.get(file, len(rank) + 1)
       for t in source_templates:
         t['_source'] = file
-        t['_local'] = is_local
+        t['_priority'] = priority
       templates += source_templates
   return templates
 
@@ -187,7 +220,7 @@ def normalize_template(t):
   if 'volumes' in t:
     t['volumes'] = cleaned_volumes
 
-  # Drop fields outside the schema ('_source'/'_local' tags are kept for dedup, stripped later)
+  # Drop fields outside the schema ('_source'/'_priority' tags are kept for dedup, stripped later)
   for k in list(t):
     if k not in TEMPLATE_KEYS and not k.startswith('_'):
       del t[k]
@@ -220,28 +253,17 @@ def is_valid_template(t):
     return False
   return True
 
-def deduplicate_and_normalize(templates):
-  """Filter invalid, deduplicate by (title, type) keeping best version, and normalize category names."""
+def deduplicate_and_normalize(templates, overrides=None):
+  """Filter invalid, deduplicate by (title, type) keeping the highest-ranked, and normalize category names."""
+  overrides = overrides or {}
   best = {}
   for t in templates:
     if not is_valid_template(t):
       log.warning(f'Skipping invalid template: {t.get("title", "<no title>")}')
       continue
     key = (normalize_string(t['title']), t.get('type', 1))
-    t_is_local = t.get('_local', False)
-    t_score = template_score(t)
-    if key in best:
-      existing = best[key]
-      existing_is_local = existing.get('_local', False)
-      existing_score = template_score(existing)
-      # Local always beats non-local; among same locality, higher score wins
-      if t_is_local and not existing_is_local:
-        best[key] = t
-      elif not t_is_local and existing_is_local:
-        pass  # keep existing
-      elif t_score > existing_score:
-        best[key] = t
-    else:
+    pinned = pinned_source(overrides, key)
+    if key not in best or template_rank(t, pinned) > template_rank(best[key], pinned):
       best[key] = t
   result = []
   for t in best.values():
@@ -278,27 +300,49 @@ def postfix_ambiguous_titles(templates):
       label = TYPE_LABELS.get(tmpl_type, f'type{tmpl_type}')
       t['title'] = f"{t['title']} ({label})"
 
+def audit_overrides(templates, overrides):
+  """Warn about overrides that stopped earning their place, so the file doesn't go stale."""
+  groups = {}
+  for t in templates:
+    if is_valid_template(t):
+      groups.setdefault((normalize_string(t['title']), t.get('type', 1)), []).append(t)
+  for key, entry in sorted(overrides.items()):
+    where = f'{entry["title"]} (type {key[1]})'
+    candidates = groups.get(key)
+    if not candidates:
+      log.warning(f'Stale override: no template matches {where}')
+      continue
+    prefer = entry.get('prefer')
+    if not prefer:
+      continue
+    pinned = f'{prefer}.json'
+    if not any(t['_source'] == pinned for t in candidates):
+      log.warning(f'Ineffective override: {prefer} has no copy of {where}, using normal priority')
+    elif max(candidates, key=template_rank) is max(candidates, key=lambda t: template_rank(t, pinned)):
+      log.warning(f'Redundant override: normal priority already picks {prefer} for {where}')
+
 def missing_sources():
   """Names from sources.csv with no downloaded file in sources/external/."""
-  with open(os.path.join(BASE_DIR, 'sources.csv')) as f:
-    expected = {row[0].strip() + '.json' for row in csv.reader(f)
-                if len(row) > 1 and row[0].strip() and row[1].strip()}
   external_dir = os.path.join(SOURCES_DIR, 'external')
   present = set(os.listdir(external_dir)) if os.path.isdir(external_dir) else set()
-  return expected - present
+  return set(listed_sources()) - present
 
 if __name__ == '__main__':
   banner('Combine', 'Merge, normalize + dedupe template sources into templates.json')
+  overrides = load_overrides()
   raw = normalize_template_fields(load_sources())
   sources_count = len({t.get('_source') for t in raw})
   log.info(f'Normalized {len(raw)} templates from {sources_count} sources')
-  templates = deduplicate_and_normalize(raw)
+  if overrides:
+    log.info(f'Applying {len(overrides)} template overrides')
+    audit_overrides(raw, overrides)
+  templates = deduplicate_and_normalize(raw, overrides)
   log.info(f'{len(templates)} unique templates after dedup ({len(raw) - len(templates)} removed)')
   postfix_ambiguous_titles(templates)
   # Strip internal tags
   for t in templates:
     t.pop('_source', None)
-    t.pop('_local', None)
+    t.pop('_priority', None)
   templates.sort(key=lambda t: t['title'].lower())
   for i, t in enumerate(templates, start=1):
     t['id'] = i

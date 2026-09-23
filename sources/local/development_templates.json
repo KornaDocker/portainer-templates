@@ -177,6 +177,41 @@
           "container": "/app/data"
         }
       ]
+    },
+    {
+      "categories": [
+        "Database"
+      ],
+      "description": "Open-source search and analytics engine",
+      "env": [
+        {
+          "default": "single-node",
+          "name": "discovery.type",
+          "preset": true
+        },
+        {
+          "default": "false",
+          "label": "Disable X-Pack security",
+          "name": "xpack.security.enabled"
+        }
+      ],
+      "image": "elasticsearch:9.5.3",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/elasticsearch.png",
+      "name": "elasticsearch",
+      "note": "Elasticsearch publishes no rolling <code>latest</code> tag, so this template pins a specific version. <code>discovery.type</code> and <code>xpack.security.enabled</code> are set so a single-node container starts and stays reachable without TLS setup.",
+      "platform": "linux",
+      "ports": [
+        "9200/tcp",
+        "9300/tcp"
+      ],
+      "restart_policy": "unless-stopped",
+      "title": "Elasticsearch",
+      "type": 1,
+      "volumes": [
+        {
+          "container": "/usr/share/elasticsearch/data"
+        }
+      ]
     }
   ],
   "version": "3"
