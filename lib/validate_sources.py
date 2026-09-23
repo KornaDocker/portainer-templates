@@ -8,7 +8,7 @@ from urllib.parse import urlparse
 
 from jsonschema import Draft7Validator, FormatChecker
 
-from combine import normalize_template
+from combine import normalize_template, normalize_string
 from log import get_logger, banner
 
 log = get_logger()
@@ -21,6 +21,7 @@ VALIDATOR = Draft7Validator(ITEM_SCHEMA, format_checker=FormatChecker())
 # Absence of these only warrants a warning under the Moderate quality gate
 RECOMMENDED = ['logo', 'categories', 'note', 'platform', 'restart_policy']
 SOURCE_EXTENSIONS = ('.json', '.yml', '.yaml', '.csv')
+OVERRIDE_STATUSES = ('ok', 'unmaintained', 'broken')
 
 def load_json(path):
     with open(path) as file:
@@ -123,8 +124,61 @@ def check_csv(path):
             errors.append(f'{path}:{line}: {name} has a non-http(s) url: {url}')
     return errors, warnings
 
+def source_names(path):
+    """Source names from sources.csv, used to check an override's "prefer" target exists"""
+    try:
+        with open(path, newline='') as file:
+            return {row[0].strip() for row in csv.reader(file)
+                    if len(row) > 1 and row[0].strip() and row[1].strip()}
+    except OSError:
+        return set()
+
+def check_overrides(path):
+    """Validate overrides.json: each entry must name a real template and actually do something"""
+    try:
+        data = load_json(path)
+    except (OSError, json.JSONDecodeError) as err:
+        return [f'{path}: could not read JSON ({err})'], []
+
+    entries = data.get('overrides') if isinstance(data, dict) else None
+    if not isinstance(entries, list):
+        return [f'{path}: missing top-level "overrides" array'], []
+
+    name = os.path.basename(path)
+    known = source_names(os.path.join(ROOT, 'sources.csv'))
+    errors, warnings, keys = [], [], Counter()
+    for index, entry in enumerate(entries):
+        where = f'{name}#{index}'
+        if not isinstance(entry, dict):
+            errors.append(f'{where}: override is not an object')
+            continue
+        title = entry.get('title')
+        if not (isinstance(title, str) and title.strip()):
+            errors.append(f'{where}: missing "title"')
+            continue
+        where = f'{name} "{title.strip()}"'
+        template_type = entry.get('type', 1)
+        if not isinstance(template_type, int) or template_type not in (1, 2, 3, 4):
+            errors.append(f'{where}: "type" must be 1, 2, 3 or 4')
+            continue
+        keys[(normalize_string(title), template_type)] += 1
+        prefer = entry.get('prefer')
+        if prefer is not None and prefer not in known:
+            errors.append(f'{where}: "prefer" names an unknown source {prefer!r}')
+        status = entry.get('status')
+        if status is not None and status not in OVERRIDE_STATUSES:
+            errors.append(f'{where}: "status" must be one of {", ".join(OVERRIDE_STATUSES)}')
+        if not any(entry.get(key) for key in ('prefer', 'status', 'note')):
+            warnings.append(f'{where}: has no "prefer", "status" or "note", so it does nothing')
+
+    errors += [f'{name}: duplicate override for {title!r} (type {kind}, {count} entries)'
+               for (title, kind), count in keys.items() if count > 1]
+    return errors, warnings
+
 def validate_path(path):
-    """Dispatch a path to the right checker by extension"""
+    """Dispatch a path to the right checker, by file name first then extension"""
+    if os.path.basename(path) == 'overrides.json':
+        return check_overrides(path)
     if path.endswith('.csv'):
         return check_csv(path)
     if path.endswith(('.yml', '.yaml')):
@@ -143,9 +197,9 @@ def expand(targets):
     return sorted(paths)
 
 def main():
-    banner('Validate sources', 'Check template sources, stack files + sources.csv')
+    banner('Validate sources', 'Check template sources, stack files, sources.csv + overrides')
     targets = sys.argv[1:] or [os.path.join(ROOT, p) for p in
-                               ('sources/local', 'sources/stacks', 'sources.csv')]
+                               ('sources/local', 'sources/stacks', 'sources.csv', 'overrides.json')]
 
     errors, warnings = [], []
     for path in expand(targets):

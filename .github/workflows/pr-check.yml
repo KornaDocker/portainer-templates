@@ -46,6 +46,7 @@ jobs:
               - 'sources/stacks/**'
             sources_csv:
               - 'sources.csv'
+              - 'overrides.json'
             scripts:
               - 'lib/**'
               - 'Schema.json'
@@ -105,7 +106,7 @@ jobs:
       - name: Validate compose stack files
         run: python lib/validate_sources.py sources/stacks
 
-  # Validate the external sources list (structure + unique names + http urls)
+  # Validate the external sources list + the per-template overrides that pin against it
   sources-list:
     name: 📇 Sources List
     runs-on: ubuntu-latest
@@ -128,8 +129,8 @@ jobs:
       - name: Install dependencies
         run: pip install -r lib/requirements.txt
 
-      - name: Validate sources.csv
-        run: python lib/validate_sources.py sources.csv
+      - name: Validate sources.csv + overrides.json
+        run: python lib/validate_sources.py sources.csv overrides.json
 
   # When the tooling or schema changes: compile, self-check the schema, re-validate output
   scripts:

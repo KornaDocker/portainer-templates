@@ -11,6 +11,7 @@ on:
     paths:
       - 'sources/**'
       - 'sources.csv'
+      - 'overrides.json'
 
 # Read by default; the build job elevates to write to commit
 permissions:
