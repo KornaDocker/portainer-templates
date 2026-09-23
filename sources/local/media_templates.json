@@ -275,7 +275,7 @@
         "Media",
         "Tools"
       ],
-      "description": "One app over your whole media stack: household members browse and request movies, TV, books, and music, and admins get Radarr, Sonarr, Chaptarr, and Lidarr control down to the individual episode, live queues for SABnzbd, qBittorrent, NZBGet, and Transmission, Tautulli activity, Plex invites, plain-English fixes for stuck downloads, and an MCP server for Claude or any MCP client. GitHub: [windoze95/cantinarr](https://github.com/windoze95/cantinarr)",
+      "description": "Media requests and server management in one app. Household members browse and request movies, shows, books, and music, follow downloads, and get notified when content is ready. Administrators manage Radarr, Sonarr, Chaptarr, Lidarr, and download clients, review approvals, and investigate stuck downloads. AI is optional, and authorized MCP clients can use the same server. GitHub: [windoze95/cantinarr](https://github.com/windoze95/cantinarr)",
       "env": [
         {
           "default": "https://push.cantinarr.com",
