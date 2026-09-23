@@ -1,6 +1,598 @@
 {
   "entries": [
     {
+      "version": "v1.2.5",
+      "previous": "v1.2.4",
+      "date": "2026-09-23",
+      "templateCount": 685,
+      "added": [
+        "Calibre-web",
+        "Change Detection",
+        "CouchPotato",
+        "File browser",
+        "Gazee",
+        "MariaDB",
+        "Minio",
+        "MusicBrainz",
+        "Node-Red",
+        "Rustdesk (container)",
+        "WordPress (stack)"
+      ],
+      "removed": [
+        "Calibre Web",
+        "ChangeDetection",
+        "Couchpotato",
+        "Filebrowser",
+        "Mariadb",
+        "MinIO",
+        "Node Red",
+        "RustDesk (container)",
+        "Wordpress (stack)",
+        "gazee",
+        "musicbrainz"
+      ],
+      "updated": [
+        {
+          "title": "Adguard",
+          "fields": [
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Airsonic (container)",
+          "fields": [
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Authelia",
+          "fields": [
+            "categories",
+            "logo",
+            "maintainer",
+            "note"
+          ]
+        },
+        {
+          "title": "Booksonic",
+          "fields": [
+            "categories",
+            "description",
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Bookstack (stack)",
+          "fields": [
+            "logo",
+            "maintainer",
+            "repository"
+          ]
+        },
+        {
+          "title": "Caddy",
+          "fields": [
+            "categories",
+            "description",
+            "logo",
+            "maintainer",
+            "name",
+            "note",
+            "ports",
+            "restart_policy",
+            "volumes"
+          ]
+        },
+        {
+          "title": "Cardigann",
+          "fields": [
+            "env",
+            "labels",
+            "logo",
+            "maintainer",
+            "platform",
+            "ports",
+            "restart_policy",
+            "volumes"
+          ]
+        },
+        {
+          "title": "Chevereto",
+          "fields": [
+            "categories",
+            "description",
+            "env",
+            "logo",
+            "maintainer",
+            "note",
+            "ports"
+          ]
+        },
+        {
+          "title": "Chowdown",
+          "fields": [
+            "categories",
+            "description",
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Codiad",
+          "fields": [
+            "description",
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Daapd",
+          "fields": [
+            "maintainer"
+          ]
+        },
+        {
+          "title": "DashMachine",
+          "fields": [
+            "categories",
+            "description",
+            "image",
+            "logo",
+            "maintainer",
+            "note",
+            "ports"
+          ]
+        },
+        {
+          "title": "DeeMix",
+          "fields": [
+            "categories",
+            "logo",
+            "maintainer",
+            "ports"
+          ]
+        },
+        {
+          "title": "Domoticz",
+          "fields": [
+            "description",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Dozzle",
+          "fields": [
+            "command",
+            "description",
+            "env",
+            "labels",
+            "logo",
+            "maintainer",
+            "platform",
+            "ports",
+            "privileged",
+            "restart_policy",
+            "volumes"
+          ]
+        },
+        {
+          "title": "Elasticsearch",
+          "fields": [
+            "env",
+            "image",
+            "maintainer",
+            "name",
+            "note",
+            "restart_policy"
+          ]
+        },
+        {
+          "title": "EmbyStat",
+          "fields": [
+            "categories",
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Ghost (container)",
+          "fields": [
+            "categories",
+            "description",
+            "env",
+            "logo",
+            "maintainer",
+            "name",
+            "note",
+            "ports",
+            "restart_policy",
+            "volumes"
+          ]
+        },
+        {
+          "title": "Ghostfolio",
+          "fields": [
+            "categories",
+            "description",
+            "env",
+            "logo",
+            "maintainer",
+            "name",
+            "note",
+            "ports",
+            "repository",
+            "restart_policy"
+          ]
+        },
+        {
+          "title": "Grafana",
+          "fields": [
+            "categories",
+            "description",
+            "logo",
+            "maintainer",
+            "note",
+            "ports",
+            "repository",
+            "restart_policy"
+          ]
+        },
+        {
+          "title": "Guacamole",
+          "fields": [
+            "categories",
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Headphones",
+          "fields": [
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Homer",
+          "fields": [
+            "categories",
+            "description",
+            "env",
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Huginn",
+          "fields": [
+            "categories",
+            "image",
+            "logo",
+            "maintainer",
+            "note",
+            "ports"
+          ]
+        },
+        {
+          "title": "Invoice Ninja (stack)",
+          "fields": [
+            "categories",
+            "logo",
+            "maintainer",
+            "repository"
+          ]
+        },
+        {
+          "title": "Kodi Headless",
+          "fields": [
+            "description",
+            "env",
+            "image",
+            "logo",
+            "maintainer",
+            "note",
+            "ports",
+            "volumes"
+          ]
+        },
+        {
+          "title": "Let's Encrypt / SWAG",
+          "fields": [
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "McMyAdmin 2",
+          "fields": [
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Minetest",
+          "fields": [
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Murmur",
+          "fields": [
+            "categories",
+            "env",
+            "image",
+            "logo",
+            "maintainer",
+            "note"
+          ]
+        },
+        {
+          "title": "Muximux",
+          "fields": [
+            "categories",
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "MySQL",
+          "fields": [
+            "env",
+            "image",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Mylar",
+          "fields": [
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Nextcloud (stack)",
+          "fields": [
+            "categories",
+            "logo",
+            "maintainer",
+            "repository"
+          ]
+        },
+        {
+          "title": "Nginx",
+          "fields": [
+            "categories",
+            "description",
+            "env",
+            "image",
+            "logo",
+            "maintainer",
+            "name",
+            "note",
+            "ports",
+            "restart_policy",
+            "volumes"
+          ]
+        },
+        {
+          "title": "Nginx Proxy Manager (container)",
+          "fields": [
+            "logo",
+            "maintainer",
+            "ports"
+          ]
+        },
+        {
+          "title": "OpenVPN Access Server",
+          "fields": [
+            "categories",
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Organizr (container)",
+          "fields": [
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Owncloud",
+          "fields": [
+            "categories",
+            "maintainer",
+            "repository"
+          ]
+        },
+        {
+          "title": "Petio",
+          "fields": [
+            "categories",
+            "env",
+            "logo",
+            "maintainer",
+            "repository"
+          ]
+        },
+        {
+          "title": "PhotoShow",
+          "fields": [
+            "description",
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Pi-Hole",
+          "fields": [
+            "categories",
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Plex Requests",
+          "fields": [
+            "categories",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "PostgreSQL",
+          "fields": [
+            "categories",
+            "description",
+            "env",
+            "logo",
+            "maintainer",
+            "name",
+            "note",
+            "ports",
+            "restart_policy",
+            "volumes"
+          ]
+        },
+        {
+          "title": "ProtonMail Bridge",
+          "fields": [
+            "categories",
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Pydio",
+          "fields": [
+            "categories",
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Quassel IRC",
+          "fields": [
+            "description",
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Reactive-Resume",
+          "fields": [
+            "categories",
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "SickChill",
+          "fields": [
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Snibox (container)",
+          "fields": [
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Tiny Tiny RSS",
+          "fields": [
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Transmission-OpenVPN",
+          "fields": [
+            "categories",
+            "description",
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "UniFi Controller",
+          "fields": [
+            "logo",
+            "maintainer"
+          ]
+        },
+        {
+          "title": "Vaultwarden",
+          "fields": [
+            "categories",
+            "description",
+            "logo",
+            "maintainer",
+            "note",
+            "ports",
+            "volumes"
+          ]
+        },
+        {
+          "title": "Watchtower",
+          "fields": [
+            "categories",
+            "command",
+            "logo",
+            "maintainer",
+            "note"
+          ]
+        },
+        {
+          "title": "Whoogle",
+          "fields": [
+            "categories",
+            "logo",
+            "maintainer",
+            "note"
+          ]
+        },
+        {
+          "title": "Yacht",
+          "fields": [
+            "categories",
+            "maintainer",
+            "note"
+          ]
+        },
+        {
+          "title": "YouTubeDL-Material",
+          "fields": [
+            "categories",
+            "logo",
+            "maintainer",
+            "note"
+          ]
+        },
+        {
+          "title": "n8n (container)",
+          "fields": [
+            "categories",
+            "description",
+            "env",
+            "image",
+            "labels",
+            "logo",
+            "maintainer",
+            "note",
+            "platform",
+            "ports",
+            "restart_policy",
+            "volumes"
+          ]
+        }
+      ]
+    },
+    {
       "version": "v1.2.4",
       "previous": "v1.2.3",
       "date": "2026-09-19",
