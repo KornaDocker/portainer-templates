@@ -89,8 +89,9 @@ Running the `make` command will download all listed sources, parse them, and com
 _So, you only need to edit **either** the [`sources.csv`](https://github.com/Lissy93/portainer-templates/blob/main/sources.csv) file, **or** add your templates directly into the [`sources/local/`](https://github.com/Lissy93/portainer-templates/tree/main/sources/local) directory._
 
 ### Adding a new Source
-If you're maintaining your own list of Portainer templates, and would like them to be included, just add the URL to your template.json file to [`sources.csv`](https://github.com/Lissy93/portainer-templates/blob/main/sources.csv), along with a name.
+If you're maintaining your own list of Portainer templates, and would like them to be included, just add the URL to your template.json file to the bottom of [`sources.csv`](https://github.com/Lissy93/portainer-templates/blob/main/sources.csv), along with a name.
 When the action runs, it will download the content, parse it and add it to the final template.
+Sources are listed in priority order: if the same app appears in several sources, the one listed first is kept (anything in `sources/local/` beats them all).
 
 ### Adding a Template / Template list
 Alternatively, place your template file within the [`sources/local/`](https://github.com/Lissy93/portainer-templates/tree/main/sources/local) directory, and it will be automatically combined into the main `template.json`. Be sure that your template corresponds to [Portainer's App Template JSON Format](https://docs.portainer.io/advanced/app-templates/format).
