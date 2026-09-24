@@ -2,12 +2,13 @@
 
 Walks every vMAJOR.MINOR.PATCH tag in version order, diffs the compiled
 templates.json between consecutive tags, and records the templates added,
-removed and updated in each version. Rebuilt from scratch on every run, so
-the output is deterministic (safe to re-run, self-heals, no commit churn).
+removed, renamed and updated in each version. Rebuilt from scratch on every
+run, so the output is deterministic (safe to re-run, self-heals, no churn).
 
-Matches the diff semantics of the release notes in release.yml: templates
-are keyed by title, with `id` ignored (it renumbers on every regeneration,
-which would otherwise flag everything as updated).
+`--diff <old-tag> <new-tag>` instead prints a single diff as JSON, which is
+how release.yml builds its release notes, so both share these semantics:
+templates are keyed by title, with `id` ignored (it renumbers on every
+regeneration, which would otherwise flag everything as updated).
 """
 import json
 import os
@@ -61,17 +62,91 @@ def templates_at(tag):
     return {t['title']: {k: v for k, v in t.items() if k != 'id'}
             for t in templates if isinstance(t, dict) and 'title' in t}
 
+def by_name(template):
+    """Bare letters and digits of a title, so 'Node Red' and 'Node-Red' match"""
+    return re.sub(r'[^a-z0-9]', '', template['title'].lower())
+
+def by_body(template):
+    """Every field but the title, so a template under a new name still matches"""
+    return json.dumps({k: v for k, v in template.items() if k != 'title'}, sort_keys=True)
+
+def match_renames(old, new, added, removed):
+    """Renames, matched on title then body and dropped from `added` and `removed`.
+    A pair only counts when exactly one candidate matches, so splits stay honest."""
+    renamed = []
+    for key in (by_name, by_body):
+        candidates = {}
+        for title in added:
+            candidates.setdefault(key(new[title]), []).append(title)
+        for title in list(removed):
+            identity = key(old[title])
+            if len(candidates.get(identity, [])) == 1:
+                new_title = candidates.pop(identity)[0]
+                renamed.append({'from': title, 'to': new_title})
+                added.remove(new_title)
+                removed.remove(title)
+    return sorted(renamed, key=lambda pair: pair['from'])
+
 def diff(old, new):
-    """Added / removed / updated templates between two title-keyed maps"""
+    """Added / removed / renamed / updated templates between two title-keyed maps"""
     added = sorted(new.keys() - old.keys())
     removed = sorted(old.keys() - new.keys())
+    renamed = match_renames(old, new, added, removed)
     updated = []
     for title in sorted(new.keys() & old.keys()):
         if new[title] != old[title]:
             fields = sorted(k for k in new[title].keys() | old[title].keys()
                             if new[title].get(k) != old[title].get(k))
             updated.append({'title': title, 'fields': fields})
-    return added, removed, updated
+    return added, removed, renamed, updated
+
+def renames_between(old_tag, previous, new_tag):
+    """Every rename step from old_tag to new_tag, one tag at a time. A release spans
+    several tags, and a title renamed twice only matches up when each hop is paired."""
+    chain = {}
+    for tag in semver_tags():
+        if not version(old_tag) < version(tag) <= version(new_tag):
+            continue
+        current = templates_at(tag)
+        if current is None:
+            continue
+        added = sorted(current.keys() - previous.keys())
+        removed = sorted(previous.keys() - current.keys())
+        for pair in match_renames(previous, current, added, removed):
+            chain[pair['from']] = pair['to']
+        previous = current
+    return chain
+
+def final_title(chain, title):
+    """The name a title ends up under once its renames are followed, loops aside"""
+    seen = {title}
+    while title in chain and chain[title] not in seen:
+        title = chain[title]
+        seen.add(title)
+    return title
+
+def print_diff(old_tag, new_tag):
+    """Print one tag-to-tag diff as JSON, for the release notes in release.yml.
+    An empty old_tag, or one with no templates.json, counts as a first release."""
+    new = templates_at(new_tag)
+    if new is None:
+        log.error(f'No templates.json at {new_tag}, nothing to diff')
+        sys.exit(1)
+    old = templates_at(old_tag) if old_tag else {}
+    if old is None:
+        log.warning(f'No templates.json at {old_tag}, treating as a first release')
+        old = {}
+    added, removed, renamed, updated = diff(old, new)
+    chain = renames_between(old_tag, old, new_tag) if old else {}
+    for title in list(removed):
+        landed = final_title(chain, title)
+        if landed in added:
+            renamed.append({'from': title, 'to': landed})
+            added.remove(landed)
+            removed.remove(title)
+    print(json.dumps({'added': added, 'removed': removed,
+                      'renamed': sorted(renamed, key=lambda pair: pair['from']),
+                      'updated': [item['title'] for item in updated]}))
 
 def main():
     banner('Changelog', 'Diff templates.json between version tags')
@@ -89,17 +164,19 @@ def main():
             log.warning(f'{tag}: no templates.json at this tag, skipping')
             continue
         first = previous_map is None
-        added, removed, updated = ([], [], []) if first else diff(previous_map, current)
+        added, removed, renamed, updated = \
+            ([], [], [], []) if first else diff(previous_map, current)
         entries.append({
             'version': tag,
             'previous': previous_tag,
             'date': dates.get(tag),
             'templateCount': len(current),
-            'added': added, 'removed': removed, 'updated': updated,
+            'added': added, 'removed': removed,
+            'renamed': renamed, 'updated': updated,
         })
         log.info(f'{tag}: first version ({len(current)} total)' if first else
                  f'{tag}: +{len(added)} added, -{len(removed)} removed, '
-                 f'~{len(updated)} updated ({len(current)} total)')
+                 f'~{len(updated)} updated, {len(renamed)} renamed ({len(current)} total)')
         previous_tag, previous_map = tag, current
 
     entries.reverse()  # newest first
@@ -109,4 +186,10 @@ def main():
     log.info(f'Wrote {len(entries)} versions to {os.path.relpath(output_path, root_dir)}')
 
 if __name__ == '__main__':
-    main()
+    if sys.argv[1:2] == ['--diff']:
+        if len(sys.argv) != 4:
+            log.error('Usage: changelog.py --diff <old-tag> <new-tag>')
+            sys.exit(1)
+        print_diff(sys.argv[2], sys.argv[3])
+    else:
+        main()

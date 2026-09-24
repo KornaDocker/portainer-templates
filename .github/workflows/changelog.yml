@@ -73,7 +73,7 @@ jobs:
             if [ -f .github/changelog.json ]; then
               versions=$(jq '.entries | length' .github/changelog.json)
               latest=$(jq -r '.entries[0]
-                | "\(.version): ✨ \(.added | length) added · 🗑️ \(.removed | length) removed · ♻️ \(.updated | length) updated"
+                | "\(.version): ✨ \(.added | length) added · 🗑️ \(.removed | length) removed · 🏷️ \(.renamed | length) renamed · ♻️ \(.updated | length) updated"
                 ' .github/changelog.json)
               echo "| Versions | ${versions} |"
               echo "| Latest | ${latest} |"
