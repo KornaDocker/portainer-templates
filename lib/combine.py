@@ -253,6 +253,38 @@ def is_valid_template(t):
     return False
   return True
 
+GITHUB_LINK = re.compile(r'\bgithub\.com/([\w.-]+)/([\w.-]+)', re.I)
+# Owners and monorepos that republish other people's apps, so aren't the app itself
+NOT_THE_APP = {'sponsors', 'orgs', 'apps', 'topics', 'about', 'features', 'marketplace',
+               'linuxserver', 'pi-hosted/pi-hosted'}
+
+def app_repo(t):
+  """The app's own repo: the first github link in its text, else its GHCR namespace."""
+  image = str(t.get('image') or '').split('@')[0].split(':')[0].split('/')
+  match = GITHUB_LINK.search(f'{t.get("description") or ""} {t.get("note") or ""}')
+  found = [match.groups()] if match else []
+  if len(image) == 3 and image[0] == 'ghcr.io':
+    found.append(tuple(image[1:]))
+  for owner, repo in found:
+    if repo and not {owner.lower(), f'{owner}/{repo}'.lower()} & NOT_THE_APP:
+      return f'{owner}/{repo}'
+  return None
+
+def backfill_app_source(templates, candidates):
+  """Re-attach the app's repo where dedup or the container/stack split lost it."""
+  known = {}
+  for t in sorted(candidates, key=lambda t: t.get('_priority', 0)):
+    repo = app_repo(t)
+    if repo and isinstance(t.get('title'), str):
+      known.setdefault(normalize_string(t['title']), repo)
+  filled = 0
+  for t in templates:
+    repo = known.get(normalize_string(t['title']))
+    if repo and not app_repo(t):
+      t['description'] = f'{t["description"].rstrip()}\n\nSource: https://github.com/{repo}'
+      filled += 1
+  return filled
+
 def deduplicate_and_normalize(templates, overrides=None):
   """Filter invalid, deduplicate by (title, type) keeping the highest-ranked, and normalize category names."""
   overrides = overrides or {}
@@ -338,6 +370,9 @@ if __name__ == '__main__':
     audit_overrides(raw, overrides)
   templates = deduplicate_and_normalize(raw, overrides)
   log.info(f'{len(templates)} unique templates after dedup ({len(raw) - len(templates)} removed)')
+  filled = backfill_app_source(templates, raw)
+  if filled:
+    log.info(f'Restored the app source link on {filled} descriptions')
   postfix_ambiguous_titles(templates)
   # Strip internal tags
   for t in templates:
