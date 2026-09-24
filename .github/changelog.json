@@ -16,26 +16,21 @@
         "Buzz",
         "Cal.com",
         "Campfire",
-        "Changedetection.io (container)",
         "Chatwoot",
         "ChromaDB",
         "ClickHouse Cluster",
-        "Code-server (container)",
         "Cognee",
         "Convex",
         "Cronicle",
         "Dify",
         "Directus",
         "Docker Registry",
-        "DocuSeal (container)",
         "DocuSeal (stack)",
         "Documenso",
         "Factorio Server",
-        "File browser (container)",
         "FileBrowser (stack)",
         "Fizzy",
         "Flowise",
-        "Forgejo (container)",
         "Forgejo (stack)",
         "Forgejo Runner",
         "Garage",
@@ -46,9 +41,7 @@
         "Hasura",
         "Hermes Agent",
         "Infisical",
-        "Jellyfin (container)",
         "Jellyfin (stack)",
-        "Jenkins (container)",
         "Jenkins (stack)",
         "Karakeep",
         "Keycloak",
@@ -62,7 +55,6 @@
         "LiveKit Agents",
         "Logto",
         "Mailpit",
-        "MariaDB (container)",
         "MariaDB (stack)",
         "MariaDB Galera",
         "MariaDB Replication",
@@ -70,15 +62,11 @@
         "Memos",
         "Metabase",
         "MinIO (stack)",
-        "Minecraft Server (container)",
         "Minecraft Server (stack)",
-        "Minio (container)",
         "MongoDB Replica Set",
-        "MySQL (container)",
         "MySQL (stack)",
         "MySQL InnoDB Cluster",
         "NATS Cluster",
-        "Odoo (container)",
         "Odoo (stack)",
         "Ollama",
         "Open Mercato",
@@ -97,21 +85,16 @@
         "Prefect",
         "PrestaShop",
         "Qdrant",
-        "RabbitMQ (container)",
         "RabbitMQ (stack)",
-        "Redis (container)",
         "Redis (stack)",
         "Redis Cluster (stack)",
-        "Redis Cluster (swarm)",
         "Redis Sentinel",
         "Redpanda",
         "Rocket.Chat",
         "Roundcube",
         "SFTPGo",
-        "SQL Server (container)",
         "SQL Server (stack)",
         "Saleor",
-        "SearXNG (container)",
         "SearXNG (stack)",
         "Shlink",
         "Supabase",
@@ -129,36 +112,92 @@
         "Valkey",
         "Valkey Cluster",
         "Valkey Sentinel",
-        "Vaultwarden (container)",
         "Vaultwarden (stack)",
         "Writebook",
         "Zitadel",
         "changedetection.io (stack)",
         "code-server (stack)",
-        "ntfy (container)",
         "ntfy (stack)",
         "useSend"
       ],
-      "removed": [
-        "Changedetection.io",
-        "Code-server",
-        "DocuSeal",
-        "File browser",
-        "Forgejo",
-        "Jellyfin",
-        "Jenkins",
-        "MariaDB",
-        "Minecraft Server",
-        "Minio",
-        "MySQL",
-        "Odoo",
-        "RabbitMQ",
-        "Redis",
-        "Redis Cluster",
-        "SQL Server",
-        "SearXNG",
-        "Vaultwarden",
-        "ntfy"
+      "removed": [],
+      "renamed": [
+        {
+          "from": "Changedetection.io",
+          "to": "Changedetection.io (container)"
+        },
+        {
+          "from": "Code-server",
+          "to": "Code-server (container)"
+        },
+        {
+          "from": "DocuSeal",
+          "to": "DocuSeal (container)"
+        },
+        {
+          "from": "File browser",
+          "to": "File browser (container)"
+        },
+        {
+          "from": "Forgejo",
+          "to": "Forgejo (container)"
+        },
+        {
+          "from": "Jellyfin",
+          "to": "Jellyfin (container)"
+        },
+        {
+          "from": "Jenkins",
+          "to": "Jenkins (container)"
+        },
+        {
+          "from": "MariaDB",
+          "to": "MariaDB (container)"
+        },
+        {
+          "from": "Minecraft Server",
+          "to": "Minecraft Server (container)"
+        },
+        {
+          "from": "Minio",
+          "to": "Minio (container)"
+        },
+        {
+          "from": "MySQL",
+          "to": "MySQL (container)"
+        },
+        {
+          "from": "Odoo",
+          "to": "Odoo (container)"
+        },
+        {
+          "from": "RabbitMQ",
+          "to": "RabbitMQ (container)"
+        },
+        {
+          "from": "Redis",
+          "to": "Redis (container)"
+        },
+        {
+          "from": "Redis Cluster",
+          "to": "Redis Cluster (swarm)"
+        },
+        {
+          "from": "SQL Server",
+          "to": "SQL Server (container)"
+        },
+        {
+          "from": "SearXNG",
+          "to": "SearXNG (container)"
+        },
+        {
+          "from": "Vaultwarden",
+          "to": "Vaultwarden (container)"
+        },
+        {
+          "from": "ntfy",
+          "to": "ntfy (container)"
+        }
       ],
       "updated": []
     },
@@ -169,6 +208,7 @@
       "templateCount": 685,
       "added": [],
       "removed": [],
+      "renamed": [],
       "updated": [
         {
           "title": "Cantinarr",
@@ -183,31 +223,53 @@
       "previous": "v1.2.4",
       "date": "2026-09-23",
       "templateCount": 685,
-      "added": [
-        "Calibre-web",
-        "Change Detection",
-        "CouchPotato",
-        "File browser",
-        "Gazee",
-        "MariaDB",
-        "Minio",
-        "MusicBrainz",
-        "Node-Red",
-        "Rustdesk (container)",
-        "WordPress (stack)"
-      ],
-      "removed": [
-        "Calibre Web",
-        "ChangeDetection",
-        "Couchpotato",
-        "Filebrowser",
-        "Mariadb",
-        "MinIO",
-        "Node Red",
-        "RustDesk (container)",
-        "Wordpress (stack)",
-        "gazee",
-        "musicbrainz"
+      "added": [],
+      "removed": [],
+      "renamed": [
+        {
+          "from": "Calibre Web",
+          "to": "Calibre-web"
+        },
+        {
+          "from": "ChangeDetection",
+          "to": "Change Detection"
+        },
+        {
+          "from": "Couchpotato",
+          "to": "CouchPotato"
+        },
+        {
+          "from": "Filebrowser",
+          "to": "File browser"
+        },
+        {
+          "from": "Mariadb",
+          "to": "MariaDB"
+        },
+        {
+          "from": "MinIO",
+          "to": "Minio"
+        },
+        {
+          "from": "Node Red",
+          "to": "Node-Red"
+        },
+        {
+          "from": "RustDesk (container)",
+          "to": "Rustdesk (container)"
+        },
+        {
+          "from": "Wordpress (stack)",
+          "to": "WordPress (stack)"
+        },
+        {
+          "from": "gazee",
+          "to": "Gazee"
+        },
+        {
+          "from": "musicbrainz",
+          "to": "MusicBrainz"
+        }
       ],
       "updated": [
         {
@@ -779,6 +841,7 @@
         "LibreDB Studio"
       ],
       "removed": [],
+      "renamed": [],
       "updated": []
     },
     {
@@ -788,6 +851,7 @@
       "templateCount": 684,
       "added": [],
       "removed": [],
+      "renamed": [],
       "updated": [
         {
           "title": "Cantinarr",
@@ -806,6 +870,7 @@
         "Atrium"
       ],
       "removed": [],
+      "renamed": [],
       "updated": []
     },
     {
@@ -815,6 +880,7 @@
       "templateCount": 683,
       "added": [],
       "removed": [],
+      "renamed": [],
       "updated": [
         {
           "title": "Cantinarr",
@@ -831,6 +897,7 @@
       "templateCount": 683,
       "added": [],
       "removed": [],
+      "renamed": [],
       "updated": []
     },
     {
@@ -842,6 +909,7 @@
         "Cantinarr"
       ],
       "removed": [],
+      "renamed": [],
       "updated": []
     },
     {
@@ -853,6 +921,7 @@
         "DockRoute"
       ],
       "removed": [],
+      "renamed": [],
       "updated": []
     },
     {
@@ -865,6 +934,7 @@
         "AudioMuse-AI (NVIDIA GPU)"
       ],
       "removed": [],
+      "renamed": [],
       "updated": []
     },
     {
@@ -874,6 +944,7 @@
       "templateCount": 679,
       "added": [],
       "removed": [],
+      "renamed": [],
       "updated": []
     },
     {
@@ -885,6 +956,7 @@
         "cairn"
       ],
       "removed": [],
+      "renamed": [],
       "updated": []
     },
     {
@@ -894,6 +966,7 @@
       "templateCount": 678,
       "added": [],
       "removed": [],
+      "renamed": [],
       "updated": []
     },
     {
@@ -903,6 +976,7 @@
       "templateCount": 678,
       "added": [],
       "removed": [],
+      "renamed": [],
       "updated": [
         {
           "title": "FluxDown",
@@ -952,6 +1026,7 @@
         "Pelorus"
       ],
       "removed": [],
+      "renamed": [],
       "updated": []
     },
     {
@@ -961,6 +1036,7 @@
       "templateCount": 676,
       "added": [],
       "removed": [],
+      "renamed": [],
       "updated": [
         {
           "title": "Dashy (container)",
@@ -985,6 +1061,7 @@
       "templateCount": 676,
       "added": [],
       "removed": [],
+      "renamed": [],
       "updated": [
         {
           "title": "CashPilot",
@@ -1244,6 +1321,7 @@
         "PodFetch"
       ],
       "removed": [],
+      "renamed": [],
       "updated": []
     },
     {
@@ -1255,6 +1333,7 @@
         "systemprompt"
       ],
       "removed": [],
+      "renamed": [],
       "updated": []
     },
     {
@@ -1266,6 +1345,7 @@
       "removed": [
         "Openvscode-server"
       ],
+      "renamed": [],
       "updated": []
     },
     {
@@ -1277,6 +1357,7 @@
         "Reach Me Out"
       ],
       "removed": [],
+      "renamed": [],
       "updated": []
     },
     {
@@ -1290,6 +1371,7 @@
       "removed": [
         "Doplarr"
       ],
+      "renamed": [],
       "updated": [
         {
           "title": "Swag",
@@ -1308,6 +1390,7 @@
         "Cloudflared-web"
       ],
       "removed": [],
+      "renamed": [],
       "updated": [
         {
           "title": "Kimai",
@@ -1330,6 +1413,7 @@
       "templateCount": 673,
       "added": [],
       "removed": [],
+      "renamed": [],
       "updated": []
     }
   ]

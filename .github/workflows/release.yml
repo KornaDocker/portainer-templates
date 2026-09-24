@@ -39,6 +39,11 @@ jobs:
           # We authenticate gh with an explicit token below
           persist-credentials: false
 
+      - name: Set up Python 🐍
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.x'
+
       - name: Resolve tags
         id: refs
         env:
@@ -89,16 +94,6 @@ jobs:
             exit 1
           fi
           git show "${TARGET}:templates.json" > new.json
-
-          # templates.json at the previous release (empty for a first release)
-          if [ -n "$PREV" ] && git cat-file -e "${PREV}:templates.json" 2>/dev/null; then
-            git show "${PREV}:templates.json" > old.json
-          else
-            if [ -n "$PREV" ]; then
-              echo "::warning::templates.json not found at ${PREV}; treating as first release"
-            fi
-            echo '{"templates":[]}' > old.json
-          fi
           total=$(jq '.templates | length' new.json)
 
           # Release title, e.g. "Portainer Templates v0.11.0 (June 2026)". Month comes
@@ -108,20 +103,12 @@ jobs:
           [ -n "$month" ] || month=$(date -u '+%B %Y')
           title="Portainer Templates ${TARGET} (${month})"
 
-          # Key by title, minus the `id` (it renumbers each regen -> false "updated")
-          jq -S '.templates | map({(.title): (del(.id))}) | add // {}' new.json > new_map.json
-          jq -S '.templates | map({(.title): (del(.id))}) | add // {}' old.json > old_map.json
-
-          jq -n --slurpfile n new_map.json --slurpfile o old_map.json '
-            $n[0] as $n | $o[0] as $o |
-            {
-              added:   (($n | keys) - ($o | keys)),
-              removed: (($o | keys) - ($n | keys)),
-              updated: [ $n | keys[] as $k | select( ($o | has($k)) and ($n[$k] != $o[$k]) ) | $k ]
-            }' > diff.json
+          # Shares the changelog's diff, so a rename isn't a removal plus an addition
+          python3 lib/changelog.py --diff "$PREV" "$TARGET" > diff.json
 
           added=$(jq '.added   | length' diff.json)
           removed=$(jq '.removed | length' diff.json)
+          renamed=$(jq '.renamed | length' diff.json)
           updated=$(jq '.updated | length' diff.json)
 
           # Render the release notes (lists capped inside jq)
@@ -137,11 +124,12 @@ jobs:
             def slugify: ascii_downcase | gsub("[^a-z ]"; "") | gsub(" "; "-");
             def md_esc: gsub("(?<x>[\\[\\]])"; "\\\(.x)");
             def item(link): if link then "- [\(md_esc)](\($site)/\(. | slugify))" else "- \(.)" end;
-            def section(title; arr; cap; link):
+            def renamed_item: "- [\(.to | md_esc)](\($site)/\(.to | slugify)) (was \(.from | md_esc))";
+            def section(title; arr; cap; render):
               if (arr | length) == 0 then empty
               else
                 "### \(title) (\(arr | length))",
-                (arr[0:cap][] | item(link)),
+                (arr[0:cap][] | render),
                 (if (arr | length) > cap
                   then "- …and \((arr | length) - cap) more"
                   else empty end),
@@ -151,9 +139,10 @@ jobs:
             ( if $prev == "" then empty
               else
                 "",
-                section("➕ Added";   $d.added;   40; true),
-                section("➖ Removed"; $d.removed; 40; false),
-                section("🔄 Updated"; $d.updated; 40; true),
+                section("➕ Added";   $d.added;   40; item(true)),
+                section("➖ Removed"; $d.removed; 40; item(false)),
+                section("🏷️ Renamed"; $d.renamed; 40; renamed_item),
+                section("🔄 Updated"; $d.updated; 40; item(true)),
                 "[Full diff](\($repo)/compare/\($prev)...\($cur))"
               end )
           ' > notes.md
@@ -161,11 +150,11 @@ jobs:
           # The tag's templates.json becomes the release asset
           cp new.json templates.json
 
-          echo "Changelog: +${added} added, -${removed} removed, ~${updated} updated (${total} total)"
+          echo "Changelog: +${added} added, -${removed} removed, ${renamed} renamed, ~${updated} updated (${total} total)"
 
           # Skip publishing if nothing changed -- unless it's the first release
           # (no previous), which is always worth cutting.
-          if [ -n "$PREV" ] && [ "$((added + removed + updated))" -eq 0 ]; then
+          if [ -n "$PREV" ] && [ "$((added + removed + renamed + updated))" -eq 0 ]; then
             changed=false
             echo "::notice::No template changes since ${PREV}; skipping the release"
           else
@@ -176,6 +165,7 @@ jobs:
             echo "total=${total}"
             echo "added=${added}"
             echo "removed=${removed}"
+            echo "renamed=${renamed}"
             echo "updated=${updated}"
             echo "changed=${changed}"
             echo "title=${title}"
@@ -216,6 +206,7 @@ jobs:
           TOTAL: ${{ steps.notes.outputs.total }}
           ADDED: ${{ steps.notes.outputs.added }}
           REMOVED: ${{ steps.notes.outputs.removed }}
+          RENAMED: ${{ steps.notes.outputs.renamed }}
           UPDATED: ${{ steps.notes.outputs.updated }}
           CHANGED: ${{ steps.notes.outputs.changed }}
           RESULT: ${{ steps.publish.outputs.result }}
@@ -239,5 +230,5 @@ jobs:
             fi
             echo "| Previous | \`${PREV:-none}\` |"
             echo "| Templates | ${TOTAL:-n/a} total |"
-            echo "| Changes | ✨ ${ADDED:-0} added · 🗑️ ${REMOVED:-0} removed · ♻️ ${UPDATED:-0} updated |"
+            echo "| Changes | ✨ ${ADDED:-0} added · 🗑️ ${REMOVED:-0} removed · 🏷️ ${RENAMED:-0} renamed · ♻️ ${UPDATED:-0} updated |"
           } >> "$GITHUB_STEP_SUMMARY"
