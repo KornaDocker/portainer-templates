@@ -4,6 +4,7 @@ import os
 import re
 import string
 import sys
+from collections import Counter
 
 import jsonschema
 
@@ -32,6 +33,8 @@ def normalize_category(c):
   """Split a category into words and title-case it for display"""
   if not isinstance(c, str):
     return ''
+  # Some sources namespace their categories, and the subtype is the useful half
+  c = c.rsplit(':', 1)[-1].strip() or c
   words = [w for w in re.split(r'[^0-9a-zA-Z]+', c) if w]
   label = ' '.join(w.upper() if w.lower() in CATEGORY_ACRONYMS else w.capitalize()
                    for w in words)
@@ -187,6 +190,11 @@ def normalize_template(t):
       t['ports'] = []
     t['ports'] = [s for s in (str(p).lstrip(':') for p in t['ports']) if s]
 
+  # An untagged image resolves to ':latest', so make that explicit
+  image = t.get('image')
+  if isinstance(image, str) and image and ':' not in image.split('/')[-1]:
+    t['image'] = f'{image}:latest'
+
   if isinstance(t.get('maintainer'), str):
     t['maintainer'] = t['maintainer'].strip()
 
@@ -308,10 +316,24 @@ def deduplicate_and_normalize(templates, overrides=None):
     result.append(t)
   return result
 
+def category_key(label):
+  """Key that ignores spacing and a plural 's', so near-identical spellings collapse."""
+  key = re.sub(r'[^a-z0-9]', '', label.lower())
+  return key[:-1] if key.endswith('s') and len(key) > 4 else key
+
+def canonical_categories(templates):
+  """One spelling per category, so 'Database' and 'Databases' don't split the listings."""
+  counts = Counter(c for t in templates for c in t.get('categories', []))
+  best = {}
+  for label in sorted(counts, key=lambda l: (-len(l.split()), -counts[l], l)):
+    best.setdefault(category_key(label), label)
+  for t in templates:
+    if t.get('categories'):
+      t['categories'] = list(dict.fromkeys(best[category_key(c)] for c in t['categories']))
+  return len(counts) - len(best)
+
 def postfix_ambiguous_titles(templates):
   """Append type labels to titles that appear with multiple types."""
-  from collections import Counter
-
   # Pass 1: postfix titles that share a normalized name across different types
   title_counts = Counter(normalize_string(t['title']) for t in templates)
   ambiguous = {title for title, count in title_counts.items() if count > 1}
@@ -370,6 +392,9 @@ if __name__ == '__main__':
     audit_overrides(raw, overrides)
   templates = deduplicate_and_normalize(raw, overrides)
   log.info(f'{len(templates)} unique templates after dedup ({len(raw) - len(templates)} removed)')
+  merged = canonical_categories(templates)
+  if merged:
+    log.info(f'Merged {merged} duplicate category spellings')
   filled = backfill_app_source(templates, raw)
   if filled:
     log.info(f'Restored the app source link on {filled} descriptions')
