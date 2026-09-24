@@ -8,3 +8,4 @@ shmolf_templates, https://raw.githubusercontent.com/shmolf/portainer-templates/m
 mikestraney_templates, https://raw.githubusercontent.com/mikestraney/portainer-templates/master/templates.json, https://github.com/mikestraney/portainer-templates/
 selfhostedpro_templates, https://raw.githubusercontent.com/SelfhostedPro/selfhosted_templates/portainer-2.0/Template/template.json, https://github.com/SelfhostedPro/selfhosted_templates/
 dnburgess_templates, https://raw.githubusercontent.com/dnburgess/self-hosted-template/master/template.json, https://github.com/dnburgess/self-hosted-template/
+deployable_sh_templates, https://deployable.sh/portainer/templates.json, https://github.com/deployable-sh/stacks/
