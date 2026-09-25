@@ -1,13 +1,12 @@
 import copy
-import csv
 import json
 import os
 import sys
 from collections import Counter
-from urllib.parse import urlparse
 
 from jsonschema import Draft7Validator, FormatChecker
 
+import sources_list
 from combine import normalize_template, normalize_string
 from log import get_logger, banner
 
@@ -44,18 +43,8 @@ def quality_warnings(where, template):
                  for name, count in Counter(names).items() if count > 1]
     return warnings
 
-def check_source(path):
-    """Validate one local source: each template must normalize to a schema-valid entry"""
-    try:
-        data = load_json(path)
-    except (OSError, json.JSONDecodeError) as err:
-        return [f'{path}: could not read JSON ({err})'], []
-
-    templates = data.get('templates') if isinstance(data, dict) else None
-    if not isinstance(templates, list):
-        return [f'{path}: missing top-level "templates" array'], []
-
-    name = os.path.basename(path)
+def check_templates(name, templates):
+    """Validate a list of templates: each must normalize to a schema-valid entry"""
     errors, warnings, titles = [], [], Counter()
     if not templates:
         warnings.append(f'{name}: contains no templates')
@@ -84,6 +73,38 @@ def check_source(path):
                for title, count in titles.items() if count > 1]
     return errors, warnings
 
+def check_source(path):
+    """Validate one local source: each template must normalize to a schema-valid entry"""
+    try:
+        data = load_json(path)
+    except (OSError, json.JSONDecodeError) as err:
+        return [f'{path}: could not read JSON ({err})'], []
+
+    templates = data.get('templates') if isinstance(data, dict) else None
+    if not isinstance(templates, list):
+        return [f'{path}: missing top-level "templates" array'], []
+
+    return check_templates(os.path.basename(path), templates)
+
+def check_url(url):
+    """Fetch a remote source and check it the way the nightly build will, so an author
+    can test their own template before opening a PR"""
+    payload, error = sources_list.fetch_json(url)
+    if error:
+        return [f'{url}: could not fetch valid JSON ({error})'], []
+
+    templates = sources_list.templates_in(payload, allow_bare=True)
+    if templates is None:
+        return [f'{url}: found no templates. Publish a single template as a JSON object, '
+                'or several under a top-level "templates" array'], []
+
+    errors, warnings = check_templates(url, templates)
+    if len(templates) > sources_list.MAX_APP_TEMPLATES:
+        warnings.append(f'{url}: holds {len(templates)} templates, so it can only be listed '
+                        f'as a collection, not an app source (which may carry at most '
+                        f'{sources_list.MAX_APP_TEMPLATES})')
+    return errors, warnings
+
 def check_stack(path):
     """A compose stack file must be valid YAML with a non-empty services mapping"""
     try:
@@ -100,36 +121,43 @@ def check_stack(path):
     warnings = [f'{path}: obsolete top-level "version" key'] if 'version' in doc else []
     return [], warnings
 
+def local_source_names():
+    """File names (minus .json) in sources/local/. A source in sources.csv must not reuse
+    one, since combine.py tells sources apart by file name alone"""
+    local_dir = os.path.join(ROOT, 'sources', 'local')
+    if not os.path.isdir(local_dir):
+        return set()
+    return {os.path.splitext(f)[0] for f in os.listdir(local_dir) if f.endswith('.json')}
+
 def check_csv(path):
-    """Validate sources.csv: each row needs a unique name and an http(s) url"""
+    """Validate sources.csv: each row needs a unique, file-name-safe name, an http(s)
+    url, and a recognized kind"""
     try:
-        with open(path, newline='') as file:
-            rows = list(csv.reader(file))
+        rows = list(sources_list.rows(path))
     except OSError as err:
         return [f'{path}: could not read ({err})'], []
 
+    local_names = local_source_names()
     errors, warnings, seen = [], [], set()
-    for line, row in enumerate(rows, start=1):
-        cells = [cell.strip() for cell in row]
-        if not any(cells):
+    for line, cells in rows:
+        for level, message in sources_list.row_problems(cells):
+            (errors if level == 'error' else warnings).append(f'{path}:{line}: {message}')
+        name = cells[0]
+        if not name:
             continue
-        if len(cells) < 2 or not cells[0] or not cells[1]:
-            warnings.append(f'{path}:{line}: malformed row, would be skipped: {row}')
-            continue
-        name, url = cells[0], cells[1]
         if name in seen:
             errors.append(f'{path}:{line}: duplicate source name {name!r}')
         seen.add(name)
-        if urlparse(url).scheme not in ('http', 'https'):
-            errors.append(f'{path}:{line}: {name} has a non-http(s) url: {url}')
+        if name in local_names:
+            errors.append(f'{path}:{line}: name {name!r} collides with '
+                          f'sources/local/{name}.json, which would leave the two '
+                          'indistinguishable when picking between duplicate templates')
     return errors, warnings
 
-def source_names(path):
+def source_names():
     """Source names from sources.csv, used to check an override's "prefer" target exists"""
     try:
-        with open(path, newline='') as file:
-            return {row[0].strip() for row in csv.reader(file)
-                    if len(row) > 1 and row[0].strip() and row[1].strip()}
+        return {source.name for source in sources_list.load()}
     except OSError:
         return set()
 
@@ -145,7 +173,7 @@ def check_overrides(path):
         return [f'{path}: missing top-level "overrides" array'], []
 
     name = os.path.basename(path)
-    known = source_names(os.path.join(ROOT, 'sources.csv'))
+    known = source_names()
     errors, warnings, keys = [], [], Counter()
     for index, entry in enumerate(entries):
         where = f'{name}#{index}'
@@ -175,8 +203,14 @@ def check_overrides(path):
                for (title, kind), count in keys.items() if count > 1]
     return errors, warnings
 
+def is_url(target):
+    return target.startswith(('http://', 'https://'))
+
 def validate_path(path):
-    """Dispatch a path to the right checker, by file name first then extension"""
+    """Dispatch a target to the right checker: remote urls first, then by file name,
+    then by extension"""
+    if is_url(path):
+        return check_url(path)
     if os.path.basename(path) == 'overrides.json':
         return check_overrides(path)
     if path.endswith('.csv'):
@@ -189,7 +223,9 @@ def expand(targets):
     """Turn any directory argument into the source files it contains (recursively)"""
     paths = []
     for target in targets:
-        if os.path.isdir(target):
+        if is_url(target):
+            paths.append(target)
+        elif os.path.isdir(target):
             for root, _, names in os.walk(target):
                 paths += [os.path.join(root, n) for n in names if n.endswith(SOURCE_EXTENSIONS)]
         else:
@@ -203,13 +239,14 @@ def main():
 
     errors, warnings = [], []
     for path in expand(targets):
-        if not os.path.exists(path):
+        if not is_url(path) and not os.path.exists(path):
             log.warning(f'Skipping missing path: {path}')
             continue
         file_errors, file_warnings = validate_path(path)
         errors += file_errors
         warnings += file_warnings
-        log.info(f'Checked {os.path.relpath(path, ROOT)}: '
+        where = path if is_url(path) else os.path.relpath(path, ROOT)
+        log.info(f'Checked {where}: '
                  f'{len(file_errors)} errors, {len(file_warnings)} warnings')
 
     for warning in warnings:
