@@ -1,6 +1,434 @@
 {
   "entries": [
     {
+      "version": "v1.2.8",
+      "previous": "v1.2.7",
+      "date": "2026-09-25",
+      "templateCount": 798,
+      "added": [],
+      "removed": [],
+      "renamed": [],
+      "updated": [
+        {
+          "title": "Apprise-API (stack)",
+          "fields": [
+            "description"
+          ]
+        },
+        {
+          "title": "ArchiSteamFarm",
+          "fields": [
+            "description"
+          ]
+        },
+        {
+          "title": "AriaNG",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Change Detection",
+          "fields": [
+            "description",
+            "image"
+          ]
+        },
+        {
+          "title": "ClickHouse Cluster",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Cloud Commander",
+          "fields": [
+            "categories",
+            "image"
+          ]
+        },
+        {
+          "title": "DaVinci Postgres Server",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Dashy (stack)",
+          "fields": [
+            "description"
+          ]
+        },
+        {
+          "title": "DeeMix",
+          "fields": [
+            "image"
+          ]
+        },
+        {
+          "title": "Diskover (stack)",
+          "fields": [
+            "description"
+          ]
+        },
+        {
+          "title": "DocuSeal (stack)",
+          "fields": [
+            "description"
+          ]
+        },
+        {
+          "title": "Dokku (container)",
+          "fields": [
+            "image"
+          ]
+        },
+        {
+          "title": "Domoticz",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Droppy",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Duplicacy",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Filerun",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Flame-Dashboard",
+          "fields": [
+            "image"
+          ]
+        },
+        {
+          "title": "Gaps",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Grocy (stack)",
+          "fields": [
+            "description"
+          ]
+        },
+        {
+          "title": "Homarr (stack)",
+          "fields": [
+            "description"
+          ]
+        },
+        {
+          "title": "Homebridge (container)",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Homebridge - Debian",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Homepage (container)",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Homepage (stack)",
+          "fields": [
+            "description"
+          ]
+        },
+        {
+          "title": "Jellyfin (stack)",
+          "fields": [
+            "description"
+          ]
+        },
+        {
+          "title": "Klaxon",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Logzio Logs Collector",
+          "fields": [
+            "image"
+          ]
+        },
+        {
+          "title": "Logzio Metrics Collector",
+          "fields": [
+            "image"
+          ]
+        },
+        {
+          "title": "MariaDB (stack)",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "MariaDB Galera",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "MariaDB Replication",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Mastodon (stack)",
+          "fields": [
+            "description"
+          ]
+        },
+        {
+          "title": "MeTube",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "MongoDB Replica Set",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "MySQL (stack)",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "MySQL InnoDB Cluster",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Mysql-workbench",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "NUTS",
+          "fields": [
+            "image"
+          ]
+        },
+        {
+          "title": "Netboot.xyz (container)",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Nginx Proxy Manager (container)",
+          "fields": [
+            "image"
+          ]
+        },
+        {
+          "title": "Nginx Proxy Manager (stack)",
+          "fields": [
+            "image"
+          ]
+        },
+        {
+          "title": "Oracle Database Free",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Overseerr (container)",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Percona Server",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Percona XtraDB Cluster",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Phpmyadmin",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Pi.alert",
+          "fields": [
+            "image"
+          ]
+        },
+        {
+          "title": "Plex Media Server",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Pure-FTP Server",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Rclone Config Backup",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Readarr (container)",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Reveal.js",
+          "fields": [
+            "image"
+          ]
+        },
+        {
+          "title": "SQL Server (stack)",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Scality S3",
+          "fields": [
+            "image"
+          ]
+        },
+        {
+          "title": "SickRage",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Speedtest Tracker (stack)",
+          "fields": [
+            "description"
+          ]
+        },
+        {
+          "title": "Sqlitebrowser",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "SurrealDB",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Tabby",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "Traefik (container)",
+          "fields": [
+            "description"
+          ]
+        },
+        {
+          "title": "Watchtower {shmolf}",
+          "fields": [
+            "image"
+          ]
+        },
+        {
+          "title": "Wizarr",
+          "fields": [
+            "image"
+          ]
+        },
+        {
+          "title": "Your_spotify (stack)",
+          "fields": [
+            "description"
+          ]
+        },
+        {
+          "title": "Zus.am",
+          "fields": [
+            "image"
+          ]
+        },
+        {
+          "title": "changedetection.io (stack)",
+          "fields": [
+            "description"
+          ]
+        },
+        {
+          "title": "iobroker",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "n8n (container)",
+          "fields": [
+            "categories"
+          ]
+        },
+        {
+          "title": "ntfy (stack)",
+          "fields": [
+            "description"
+          ]
+        },
+        {
+          "title": "vsftpd FTP Server",
+          "fields": [
+            "categories",
+            "image"
+          ]
+        }
+      ]
+    },
+    {
       "version": "v1.2.7",
       "previous": "v1.2.6",
       "date": "2026-09-24",
