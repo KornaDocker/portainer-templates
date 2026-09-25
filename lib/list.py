@@ -47,8 +47,7 @@ def generate_app_list():
   return markdown_content
 
 def github_user(*urls):
-    """The GitHub account behind a source, for its avatar and credit link. Falls back to
-    the maintainer link, since a source's JSON may be served from anywhere."""
+    """The GitHub account behind a source, for its avatar: from its url, else its maintainer"""
     for url in urls:
         parsed = urllib.parse.urlparse(url or '')
         path_parts = [p for p in parsed.path.split('/') if p]
@@ -66,8 +65,7 @@ def source_credit(source, label):
             f'[@{username}](https://github.com/{username})')
 
 def app_label(source):
-    """An app source's own title, read back from what was downloaded, so the credit reads
-    "Cantinarr" rather than "cantinarr". Falls back to the source name when unfetched."""
+    """An app's own title from what was downloaded, so the credit reads Cantinarr not cantinarr"""
     try:
         templates = load_json_file(os.path.join(external_dir, source.filename))['templates']
         titles = [t['title'] for t in templates if isinstance(t, dict) and t.get('title')]

@@ -1,19 +1,4 @@
-"""Reading sources.csv, and fetching what it points at, in one place.
-
-Each row is: name, url, maintainer, kind
-
-  name        unique, lowercase; becomes sources/external/<name>.json
-  url         http(s) link to the raw JSON
-  maintainer  the source's home page, shown as its "Report issues" link
-  kind        'collection' for someone's maintained list of apps, 'app' for a
-              single app published by its own author. Blank means collection,
-              so the original three-column rows still read correctly.
-
-The build trusts the two kinds differently. An app source outranks every
-collection when the same app appears in both, since its author maintains that
-one app and knows it best. In exchange it may only carry a handful of
-templates, and if it stops resolving the build carries on without it.
-"""
+"""Reads sources.csv (name, url, maintainer, kind) and fetches what it points at."""
 import csv
 import os
 import re
@@ -27,6 +12,7 @@ log = get_logger()
 
 SOURCES_CSV = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'sources.csv')
 
+# 'collection' is a list of many apps, 'app' is one app published by its own author
 COLLECTION = 'collection'
 APP = 'app'
 KINDS = (COLLECTION, APP)
@@ -34,8 +20,7 @@ KINDS = (COLLECTION, APP)
 # A source name becomes a file name, so keep it to something unambiguous
 NAME_PATTERN = re.compile(r'^[a-z0-9][a-z0-9_-]*$')
 
-# An app may reasonably ship a container and a stack, or a plain build and a
-# GPU one. Much past that is a collection, and belongs in one.
+# Enough for a container plus a stack, or a plain plus a GPU build; more is a collection
 MAX_APP_TEMPLATES = 5
 
 class Source(NamedTuple):
@@ -63,8 +48,7 @@ def rows(path=SOURCES_CSV):
         yield line, cells
 
 def row_problems(cells):
-  """Everything wrong with a row, as (level, message) pairs. Any problem at all
-  means load() skips the row; the level only decides how loudly to report it."""
+  """Everything wrong with a row, as (level, message) pairs; any problem makes load() skip it"""
   if len(cells) < 2 or not cells[0] or not cells[1]:
     return [('warning', f'malformed row, would be skipped: {cells}')]
   problems = []
@@ -89,8 +73,7 @@ def parse(cells):
   return Source(cells[0], cells[1], maintainer, kind)
 
 def load(path=SOURCES_CSV):
-  """Every usable source, in listed order. Rows with problems are skipped here
-  and reported by validate_sources.py, which is what gates a PR."""
+  """Every usable source, in listed order. validate_sources.py reports the rows skipped here"""
   sources, seen = [], set()
   for line, cells in rows(path):
     problems = row_problems(cells)
@@ -106,9 +89,8 @@ def load(path=SOURCES_CSV):
   return sources
 
 def fetch_json(url, attempts=3):
-  """Fetch and parse JSON from a url, retrying a couple of times on a blip.
-  Returns (payload, error message), of which exactly one is set."""
-  import requests  # only the fetching path needs it, so keep it off the parsers
+  """Fetch and parse JSON, retrying on a blip. Returns (payload, error), one of them None"""
+  import requests  # only the fetching path needs it
   for attempt in range(attempts):
     try:
       response = requests.get(url, timeout=30)
@@ -120,9 +102,7 @@ def fetch_json(url, attempts=3):
       time.sleep(2 ** attempt)
 
 def templates_in(payload, allow_bare=False):
-  """The template list inside a downloaded source, whatever shape it arrived in,
-  or None if there isn't one. `allow_bare` accepts a single unwrapped template
-  object, which is the natural way to publish just the one app."""
+  """The template list in a downloaded source, or None. `allow_bare` takes a lone object"""
   if isinstance(payload, list):
     return payload
   if isinstance(payload, dict):

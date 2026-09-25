@@ -134,29 +134,26 @@ jobs:
       - name: Validate sources.csv + overrides.json
         run: python lib/validate_sources.py sources.csv overrides.json
 
-      # Fetch any source URL this PR adds and check it the way the build will,
-      # so a broken template is caught here rather than in the nightly build
+      # Check source urls this PR changes: a collection the build can't read stops the nightly
       - name: Validate newly added sources
         if: github.event_name == 'pull_request'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           set -euo pipefail
-          # -d '[:blank:]' strips spaces/tabs but keeps the newline between urls
-          added=$(git diff "$BASE_SHA" -- sources.csv \
-                  | grep '^+[^+]' \
-                  | cut -d, -f2 \
-                  | tr -d '[:blank:]' \
-                  | grep -E '^https?://' || true)
-          if [ -z "$added" ]; then
-            echo "No new sources in this PR."
+          # '|| true' since grep exits 1 when this PR only touches overrides.json
+          urls=$(git diff "$BASE_SHA" -- sources.csv \
+                 | grep '^+[^+]' | cut -c2- \
+                 | awk -F, '{ gsub(/[[:blank:]]/, "", $2)
+                              if ($2 ~ /^https?:\/\//) print $2 }' || true)
+          if [ -z "$urls" ]; then
+            echo "This PR changes no source urls, nothing to fetch."
             exit 0
           fi
           status=0
-          for url in $added; do
-            echo "::group::$url"
+          for url in $urls; do
+            echo "--- Validating $url"
             python lib/validate_sources.py "$url" || status=1
-            echo "::endgroup::"
           done
           exit $status
 

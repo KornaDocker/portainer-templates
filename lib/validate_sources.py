@@ -45,7 +45,7 @@ def quality_warnings(where, template):
 
 def check_templates(name, templates):
     """Validate a list of templates: each must normalize to a schema-valid entry"""
-    errors, warnings, titles = [], [], Counter()
+    errors, warnings, seen = [], [], Counter()
     if not templates:
         warnings.append(f'{name}: contains no templates')
     for index, raw in enumerate(templates):
@@ -55,7 +55,6 @@ def check_templates(name, templates):
             continue
         title = raw.get('title')
         if isinstance(title, str) and title.strip():
-            titles[title.strip()] += 1
             where = f'{name} "{title.strip()}"'
         # Normalize a copy exactly as combine.py would, then judge the published result
         try:
@@ -68,9 +67,13 @@ def check_templates(name, templates):
         errors += [f'{where}: {e.message}' for e in VALIDATOR.iter_errors(template)]
         errors += stackfile_errors(where, template)
         warnings += quality_warnings(where, template)
+        # Keyed like combine's dedup, so one app may ship both a container and a stack
+        if isinstance(title, str) and title.strip():
+            seen[(normalize_string(title), template.get('type', 1))] += 1
 
-    errors += [f'{name}: duplicate title {title!r} ({count} templates)'
-               for title, count in titles.items() if count > 1]
+    errors += [f'{name}: duplicate template {title!r} of type {kind} ({count} copies), '
+               'so all but one would be dropped'
+               for (title, kind), count in seen.items() if count > 1]
     return errors, warnings
 
 def check_source(path):
@@ -86,24 +89,32 @@ def check_source(path):
 
     return check_templates(os.path.basename(path), templates)
 
+def url_kind(url):
+    """The kind sources.csv gives this url, defaulting to app, the stricter of the two"""
+    for source in sources_list.load():
+        if source.url == url:
+            return source.kind
+    return sources_list.APP
+
 def check_url(url):
-    """Fetch a remote source and check it the way the nightly build will, so an author
-    can test their own template before opening a PR"""
+    """Check a remote source as download.py will: an app per template, a collection on shape"""
     payload, error = sources_list.fetch_json(url)
     if error:
         return [f'{url}: could not fetch valid JSON ({error})'], []
 
-    templates = sources_list.templates_in(payload, allow_bare=True)
-    if templates is None:
-        return [f'{url}: found no templates. Publish a single template as a JSON object, '
-                'or several under a top-level "templates" array'], []
-
-    errors, warnings = check_templates(url, templates)
+    is_app = url_kind(url) == sources_list.APP
+    templates = sources_list.templates_in(payload, allow_bare=is_app)
+    if not templates:
+        shape = ('one template as a JSON object, or several under a top-level "templates" '
+                 'array') if is_app else 'its templates under a top-level "templates" array'
+        return [f'{url}: found no templates, so the build would skip it. Publish {shape}'], []
+    if not is_app:
+        return [], []  # the shape is all the build needs from a collection
     if len(templates) > sources_list.MAX_APP_TEMPLATES:
-        warnings.append(f'{url}: holds {len(templates)} templates, so it can only be listed '
-                        f'as a collection, not an app source (which may carry at most '
-                        f'{sources_list.MAX_APP_TEMPLATES})')
-    return errors, warnings
+        return [f'{url}: holds {len(templates)} templates, so it can only be listed as a '
+                f'collection, not an app source (which may carry at most '
+                f'{sources_list.MAX_APP_TEMPLATES})'], []
+    return check_templates(url, templates)
 
 def check_stack(path):
     """A compose stack file must be valid YAML with a non-empty services mapping"""
@@ -122,16 +133,14 @@ def check_stack(path):
     return [], warnings
 
 def local_source_names():
-    """File names (minus .json) in sources/local/. A source in sources.csv must not reuse
-    one, since combine.py tells sources apart by file name alone"""
+    """File names in sources/local/, which a source name can't reuse: combine keys on them"""
     local_dir = os.path.join(ROOT, 'sources', 'local')
     if not os.path.isdir(local_dir):
         return set()
     return {os.path.splitext(f)[0] for f in os.listdir(local_dir) if f.endswith('.json')}
 
 def check_csv(path):
-    """Validate sources.csv: each row needs a unique, file-name-safe name, an http(s)
-    url, and a recognized kind"""
+    """Validate sources.csv: unique file-name-safe name, http(s) url, recognized kind"""
     try:
         rows = list(sources_list.rows(path))
     except OSError as err:
@@ -207,8 +216,7 @@ def is_url(target):
     return target.startswith(('http://', 'https://'))
 
 def validate_path(path):
-    """Dispatch a target to the right checker: remote urls first, then by file name,
-    then by extension"""
+    """Dispatch a target to the right checker, by url then file name then extension"""
     if is_url(path):
         return check_url(path)
     if os.path.basename(path) == 'overrides.json':

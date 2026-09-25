@@ -56,9 +56,7 @@ def template_rank(t, pinned=None):
   return (t['_source'] == pinned, -t['_priority'], template_score(t))
 
 def source_priority(sources):
-  """File name -> dedup priority, where lower wins. An app source outranks every
-  collection, because its author maintains that one app and knows it best.
-  Within each kind, the order they're listed in sources.csv decides."""
+  """File name -> dedup priority, lower wins: app sources first, then sources.csv order"""
   ordered = [s for s in sources if s.is_app] + [s for s in sources if not s.is_app]
   return {s.filename: i for i, s in enumerate(ordered, start=1)}
 
@@ -248,9 +246,7 @@ def normalize_template_fields(templates):
   return normalized
 
 def schema_errors(t):
-  """Schema violations in a single template. Checked per template so that one bad
-  entry from an upstream source gets dropped, rather than failing the whole build
-  at the final validation."""
+  """Schema violations in one template, so a bad entry is dropped instead of failing the build"""
   probe = {k: v for k, v in t.items() if not k.startswith('_')}
   probe.setdefault('id', 1)  # combine assigns real ids at write time
   return [e.message for e in ITEM_VALIDATOR.iter_errors(probe)]
@@ -392,9 +388,7 @@ def audit_overrides(templates, overrides):
       log.warning(f'Redundant override: normal priority already picks {prefer} for {where}')
 
 def audit_app_sources(templates, sources):
-  """An author who publishes their own template, but whose app also still sits in
-  sources/local/, never gets their updates published: local wins every time.
-  Warn, so the stale local copy can be deleted."""
+  """Warn when a local copy shadows an app source, since the author's updates never publish"""
   local = {}
   for t in templates:
     if t['_priority'] == 0 and isinstance(t.get('title'), str):
@@ -449,7 +443,7 @@ if __name__ == '__main__':
       previous = len(json.load(f)['templates'])
   except (OSError, ValueError, KeyError):
     previous = 0
-  # An app source going away costs only its own app, so it just gets left out
+  # A missing app source only costs its own app, so it's left out rather than fatal
   unavailable = missing_sources(sources, sources_list.APP)
   if unavailable:
     log.warning(f'{len(unavailable)} app sources were not downloaded, so they are left '

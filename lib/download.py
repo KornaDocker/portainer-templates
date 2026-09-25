@@ -54,9 +54,7 @@ failures = [source for source in sources if not download(source)]
 
 log.info(f'Downloaded {len(sources) - len(failures)}/{len(sources)} sources')
 
-# A collection carries hundreds of apps, so losing one is worth stopping for.
-# An app source costs only its own app, and there are far more of them to go
-# stale, so the build goes on without it.
+# A lost collection stops the build; a lost app source only costs its own app
 failed_apps = [source.name for source in failures if source.is_app]
 failed_collections = [source.name for source in failures if not source.is_app]
 if failed_apps:
