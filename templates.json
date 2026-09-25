@@ -643,7 +643,7 @@
       "categories": [
         "API"
       ],
-      "description": "Apprise API was designed to easily fit into existing (and new) eco-systems that are looking for a simple notification solution.70+ services",
+      "description": "Apprise API was designed to easily fit into existing (and new) eco-systems that are looking for a simple notification solution.70+ services\n\nSource: https://github.com/caronc/apprise-api",
       "logo": "https://raw.githubusercontent.com/caronc/apprise/master/apprise/assets/themes/default/apprise-logo.png",
       "name": "apprise-api",
       "platform": "linux",
@@ -715,7 +715,7 @@
         "Tools",
         "Games"
       ],
-      "description": "C# application with primary purpose of farming Steam cards from multiple accounts simultaneously.",
+      "description": "C# application with primary purpose of farming Steam cards from multiple accounts simultaneously.\n\nSource: https://github.com/JustArchiNET/ArchiSteamFarm",
       "env": [
         {
           "default": "1000",
@@ -874,7 +874,7 @@
     },
     {
       "categories": [
-        "Downloader"
+        "Downloaders"
       ],
       "description": "AriaNg is a modern web frontend making aria2 easier to use. AriaNg is written in pure html & javascript, thus it does not need any compilers or runtime environment. You can just put AriaNg in your web server and open it in your browser. AriaNg uses responsive layout, and supports any desktop or mobile devices.",
       "env": [
@@ -2962,8 +2962,8 @@
       "categories": [
         "Network"
       ],
-      "description": "Self-hosted website change detection monitoring.",
-      "image": "dgtlmoon/changedetection.io",
+      "description": "Self-hosted website change detection monitoring.\n\nSource: https://github.com/dgtlmoon/changedetection.io",
+      "image": "dgtlmoon/changedetection.io:latest",
       "logo": "https://raw.githubusercontent.com/xneo1/portainer_templates/master/Images/changedetection-custom.png",
       "name": "changedetection",
       "platform": "linux",
@@ -3041,7 +3041,7 @@
       "type": 3,
       "title": "changedetection.io (stack)",
       "name": "changedetection",
-      "description": "changedetection.io - watch any web page for changes (prices, stock, content, competitors' pages) with filters, diffs, and notifications to 80+ targets (the in-project `ntfy` template included). Single container, one volume.",
+      "description": "changedetection.io - watch any web page for changes (prices, stock, content, competitors' pages) with filters, diffs, and notifications to 80+ targets (the in-project `ntfy` template included). Single container, one volume.\n\nSource: https://github.com/dgtlmoon/changedetection.io",
       "categories": [
         "Monitoring Analytics"
       ],
@@ -3480,7 +3480,7 @@
       "name": "clickhouse",
       "description": "3-node ClickHouse cluster, one shard, three replicas, with embedded ClickHouse Keeper (no separate ZooKeeper pods). Internal-only; 20 GB per node.",
       "categories": [
-        "Databases"
+        "Database"
       ],
       "platform": "linux",
       "repository": {
@@ -3504,10 +3504,10 @@
       "title": "Cloud Commander",
       "description": "Cloud Commander a file manager for the web with console and editor.",
       "logo": "https://mediadepot.github.io/templates/img/cloudcmd-logo.png",
-      "image": "coderaiser/cloudcmd",
+      "image": "coderaiser/cloudcmd:latest",
       "categories": [
         "Documents",
-        "Network Other",
+        "Other",
         "Tools"
       ],
       "ports": [
@@ -4579,7 +4579,7 @@
         "Tools",
         "Dashboard"
       ],
-      "description": "Helps you organize your self-hosted services by making them accessible from a single place.",
+      "description": "Helps you organize your self-hosted services by making them accessible from a single place.\n\nSource: https://github.com/lissy93/dashy",
       "env": [
         {
           "default": "1000",
@@ -4693,7 +4693,7 @@
     },
     {
       "categories": [
-        "Tool"
+        "Tools"
       ],
       "description": "DaVinci Resolve Postgresql Server, Davinci requires a specific version of postgres db, this container will install the version needed",
       "env": [
@@ -4865,7 +4865,7 @@
         "Music"
       ],
       "description": "Deemix is a deezer downloader built from the ashes of Deezloader Remix.",
-      "image": "registry.gitlab.com/bockiii/deemix-docker",
+      "image": "registry.gitlab.com/bockiii/deemix-docker:latest",
       "logo": "https://raw.githubusercontent.com/xneo1/portainer_templates/master/Images/deemix.png",
       "name": "deemix",
       "note": "Deemix may take a few minutes to install. Be sure to check the logs for details. Refer to <a href='https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Login+via+userToken'>this page</a> for userToken details.",
@@ -5206,7 +5206,7 @@
       "categories": [
         "Files"
       ],
-      "description": "Open-source file indexer, search engine, data analytics and management platform powered by Elasticsearch.",
+      "description": "Open-source file indexer, search engine, data analytics and management platform powered by Elasticsearch.\n\nSource: https://github.com/diskoverdata/diskover-community",
       "logo": "https://github.com/diskoverdata/diskover-docs/raw/main/source_files/images/diskover_logo_only.png",
       "name": "diskover",
       "platform": "linux",
@@ -5583,7 +5583,7 @@
       "type": 3,
       "title": "DocuSeal (stack)",
       "name": "docuseal",
-      "description": "DocuSeal - open-source document signing: a WYSIWYG field builder (12 field types), multiple submitters, automatic PDF eSignatures with verification, API and webhooks. The signing core is fully functional in the free AGPL edition.",
+      "description": "DocuSeal - open-source document signing: a WYSIWYG field builder (12 field types), multiple submitters, automatic PDF eSignatures with verification, API and webhooks. The signing core is fully functional in the free AGPL edition.\n\nSource: https://github.com/docusealco/docuseal",
       "categories": [
         "Business Apps"
       ],
@@ -5711,7 +5711,7 @@
         "Paas"
       ],
       "platform": "linux",
-      "image": "dokku/dokku",
+      "image": "dokku/dokku:latest",
       "ports": [
         "22/tcp",
         "80/tcp",
@@ -5894,7 +5894,7 @@
     },
     {
       "categories": [
-        "Homeautomation",
+        "Home Automation",
         "Management"
       ],
       "description": "Domoticz is a Home Automation System that lets you monitor and configure various devices like: Lights, Switches, various sensors/meters like Temperature, Rain, Wind, UV, Electra, Gas, Water and much more. Notifications/Alerts can be sent to any mobile device.",
@@ -6142,8 +6142,8 @@
       "image": "silverwind/droppy:latest",
       "categories": [
         "Tools",
-        "Network Web",
-        "Network Other"
+        "Web",
+        "Other"
       ],
       "ports": [
         "8989/tcp"
@@ -6384,7 +6384,7 @@
       "logo": "https://mediadepot.github.io/templates/img/duplicacy-icon.png",
       "image": "mediadepot/duplicacy:latest",
       "categories": [
-        "Utility Backup"
+        "Backup"
       ],
       "ports": [
         "3875/tcp"
@@ -7413,7 +7413,7 @@
       "logo": "https://mediadepot.github.io/templates/img/filerun-logo.png",
       "categories": [
         "Documents",
-        "Network Other",
+        "Other",
         "Tools"
       ],
       "env": [],
@@ -7677,7 +7677,7 @@
         "Dashboard"
       ],
       "description": "Flame is self-hosted startpage for your server. Its design is inspired (heavily) by SUI. Flame is very easy to setup and use. With built-in editors, it allows you to setup your very own application hub in no time - no file editing necessary.",
-      "image": "pawelmalak/flame",
+      "image": "pawelmalak/flame:latest",
       "logo": "https://raw.githubusercontent.com/xneo1/portainer_templates/master/Images/flame.png",
       "name": "flame-dashboard",
       "platform": "linux",
@@ -8718,8 +8718,8 @@
       "image": "housewrecker/gaps:latest",
       "categories": [
         "Tools",
-        "Network Web",
-        "Network Other"
+        "Web",
+        "Other"
       ],
       "ports": [
         "8484/tcp"
@@ -9634,7 +9634,7 @@
       "categories": [
         "Tools"
       ],
-      "description": "Grocy is an ERP system for your kitchen! Cut down on food waste, and manage your chores with this brilliant utility.",
+      "description": "Grocy is an ERP system for your kitchen! Cut down on food waste, and manage your chores with this brilliant utility.\n\nSource: https://github.com/grocy/grocy",
       "logo": "https://grocy.info/img/grocy_logo.svg",
       "name": "grocy",
       "platform": "linux",
@@ -10488,7 +10488,7 @@
       "categories": [
         "Dashboard"
       ],
-      "description": "Simplify the management of your server with Homarr - a sleek, modern dashboard that puts all of your apps and services at your fingertips.",
+      "description": "Simplify the management of your server with Homarr - a sleek, modern dashboard that puts all of your apps and services at your fingertips.\n\nSource: https://github.com/ajnart/homarr",
       "logo": "https://homarr.dev/img/logo.svg",
       "name": "homarr",
       "platform": "linux",
@@ -10622,7 +10622,7 @@
     },
     {
       "categories": [
-        "Homeautomation"
+        "Home Automation"
       ],
       "description": "Homebridge allows you to integrate with smart home devices that do not natively support HomeKit. There are over 2,000 Homebridge plugins supporting thousands of different smart accessories.",
       "env": [
@@ -10690,7 +10690,7 @@
     },
     {
       "categories": [
-        "Homeautomation"
+        "Home Automation"
       ],
       "description": "Debian Homebridge allows you to integrate with smart home devices that do not natively support HomeKit. There are over 2,000 Homebridge plugins supporting thousands of different smart accessories.",
       "env": [
@@ -10806,9 +10806,9 @@
       "image": "ghcr.io/benphelps/homepage:latest",
       "categories": [
         "Tools",
-        "Network Web",
-        "Network Other",
-        "Status Stable"
+        "Web",
+        "Other",
+        "Stable"
       ],
       "ports": [
         "3000/tcp"
@@ -10868,7 +10868,7 @@
       "categories": [
         "Dashboard"
       ],
-      "description": "Homepage is a new dashboard implementation that creates a super fast static site.",
+      "description": "Homepage is a new dashboard implementation that creates a super fast static site.\n\nSource: https://github.com/benphelps/homepage",
       "logo": "https://raw.githubusercontent.com/benphelps/homepage/main/images/preview.png",
       "name": "homepage",
       "platform": "linux",
@@ -11803,7 +11803,7 @@
     },
     {
       "categories": [
-        "Homeautomation"
+        "Home Automation"
       ],
       "description": "IoBroker is a open source IoT platform written in JavaScript that easily connects smarthome components from different manufactures. With the help of plugins (called: adapters) ioBroker is able to communicate with a big variety of IoT hardware and services using different protocols and APIs.",
       "env": [
@@ -12116,7 +12116,7 @@
       "type": 3,
       "title": "Jellyfin (stack)",
       "name": "jellyfin",
-      "description": "Jellyfin - the free, self-hosted media server: stream your movies, TV shows, music, and photos to any device through a web UI and native apps (Android, iOS, Android TV, Roku, Kodi, and more).",
+      "description": "Jellyfin - the free, self-hosted media server: stream your movies, TV shows, music, and photos to any device through a web UI and native apps (Android, iOS, Android TV, Roku, Kodi, and more).\n\nSource: https://github.com/jellyfin/jellyfin",
       "categories": [
         "Media"
       ],
@@ -12918,7 +12918,7 @@
       "logo": "https://mediadepot.github.io/templates/img/klaxon-logo.png",
       "categories": [
         "Documents",
-        "Network Other",
+        "Other",
         "Tools"
       ],
       "env": [
@@ -14556,7 +14556,7 @@
       "title": "Logzio Logs Collector",
       "description": "Docker container that uses Filebeat to collect logs from other Docker containers and forward those logs to your Logz.io account.",
       "logo": "https://mediadepot.github.io/templates/img/logzio-icon.png",
-      "image": "logzio/docker-collector-logs",
+      "image": "logzio/docker-collector-logs:latest",
       "categories": [
         "Tools"
       ],
@@ -14595,7 +14595,7 @@
       "title": "Logzio Metrics Collector",
       "description": "Docker Metrics Collector is a container that runs Metricbeat with the modules you enable at runtime.",
       "logo": "https://mediadepot.github.io/templates/img/logzio-icon.png",
-      "image": "logzio/docker-collector-metrics",
+      "image": "logzio/docker-collector-metrics:latest",
       "categories": [
         "Tools"
       ],
@@ -15192,7 +15192,7 @@
       "name": "mariadb",
       "description": "MariaDB 11.8 - the community-developed MySQL fork, as a single self-hosted node. Drop-in compatible with MySQL for most applications, configured through the official image's environment variables, with data on a volume.",
       "categories": [
-        "Databases"
+        "Database"
       ],
       "platform": "linux",
       "repository": {
@@ -15231,7 +15231,7 @@
       "name": "mariadb-galera",
       "description": "3-node MariaDB 11.8 LTS cluster with Galera synchronous multi-primary replication - every node accepts writes, any node can die. Runs the OFFICIAL mariadb image (the Galera library ships in it); clustering is pure command-line flags.",
       "categories": [
-        "Databases"
+        "Database"
       ],
       "platform": "linux",
       "repository": {
@@ -15258,7 +15258,7 @@
       "name": "mariadb-replication",
       "description": "Asynchronous MariaDB replication: one primary accepts writes and streams its binary log to a read-only replica. This is the classic read-scaling / hot-standby topology.",
       "categories": [
-        "Databases"
+        "Database"
       ],
       "platform": "linux",
       "repository": {
@@ -15612,7 +15612,7 @@
       "categories": [
         "Social"
       ],
-      "description": "Mastodon is a free, open-source social network server based on ActivityPub where users can follow friends and discover new ones..",
+      "description": "Mastodon is a free, open-source social network server based on ActivityPub where users can follow friends and discover new ones..\n\nSource: https://github.com/mastodon/mastodon",
       "logo": "https://raw.githubusercontent.com/linuxserver/docker-templates/master/linuxserver.io/img/mastodon-banner.png",
       "name": "mastodon",
       "platform": "linux",
@@ -16110,7 +16110,7 @@
     },
     {
       "categories": [
-        "Downloader"
+        "Downloaders"
       ],
       "description": "Web GUI for youtube-dl (using the yt-dlp fork) with playlist support. Allows you to download videos from YouTube and dozens of other sites (https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)",
       "env": [
@@ -16556,7 +16556,7 @@
       "name": "mongodb",
       "description": "3-node MongoDB 8 replica set (`rs0`), deployable locally with plain Docker Compose or to Miget as a compose stack.",
       "categories": [
-        "Databases"
+        "Database"
       ],
       "platform": "linux",
       "repository": {
@@ -17098,7 +17098,7 @@
       "name": "mysql",
       "description": "MySQL 8.4 LTS - the world's most popular open- source relational database, as a single self-hosted node. Configured entirely through the official image's environment variables, with data on a volume.",
       "categories": [
-        "Databases"
+        "Database"
       ],
       "platform": "linux",
       "repository": {
@@ -17137,7 +17137,7 @@
       "name": "mysql-innodb-cluster",
       "description": "3-node high availability using MySQL Group Replication - the engine that MySQL InnoDB Cluster is built on.",
       "categories": [
-        "Databases"
+        "Database"
       ],
       "platform": "linux",
       "repository": {
@@ -17168,7 +17168,7 @@
       "note": "Portainer App Templates by <a href='https://www.technorabilia.com' target='_blank'>Technorabilia</a>, based on data provided by <a href='https://www.linuxserver.io' target='_blank'>LinuxServer.io</a>.</p><p>Ensure to create the following volume directories on the host file system, or modify the paths in the volume mapping section under the advanced options below, as needed.</p><p>mkdir -p /srv/lsio/mysql-workbench/config</p>",
       "description": "[MySQL Workbench](https://www.mysql.com/products/workbench/) is a unified visual tool for database architects, developers, and DBAs. MySQL Workbench provides data modeling, SQL development, and comprehensive administration tools for server configuration, user administration, backup, and much more.",
       "categories": [
-        "Databases"
+        "Database"
       ],
       "platform": "linux",
       "logo": "https://raw.githubusercontent.com/linuxserver/docker-templates/master/linuxserver.io/img/mysql-workbench-icon.png",
@@ -17214,7 +17214,7 @@
       "logo": "https://mediadepot.github.io/templates/img/n8n.png",
       "image": "docker.n8n.io/n8nio/n8n:latest",
       "categories": [
-        "Network Other",
+        "Other",
         "Tools"
       ],
       "ports": [
@@ -17376,7 +17376,7 @@
       "image": "linuxserver/netbootxyz:latest",
       "categories": [
         "Downloaders",
-        "Network Other",
+        "Other",
         "Tools"
       ],
       "ports": [
@@ -17916,7 +17916,7 @@
         "Tools"
       ],
       "description": "Nginx Proxy Manager enables you to easily forward to your websites running at home or otherwise, including free SSL, without having to know too much about Nginx or Letsencrypt.",
-      "image": "jc21/nginx-proxy-manager",
+      "image": "jc21/nginx-proxy-manager:latest",
       "logo": "https://raw.githubusercontent.com/Qballjos/portainer_templates/master/Images/proxy_mgr.png",
       "name": "nginx-proxy-manager",
       "platform": "linux",
@@ -17955,7 +17955,7 @@
         "Network"
       ],
       "description": "Nginx Proxy Manager enables you to easily forward to your websites running at home or otherwise, including free SSL, without having to know too much about Nginx or Letsencrypt.",
-      "image": "jc21/nginx-proxy-manager",
+      "image": "jc21/nginx-proxy-manager:latest",
       "logo": "https://nginxproxymanager.com/icon.png",
       "name": "npm",
       "repository": {
@@ -18366,7 +18366,7 @@
       "type": 3,
       "title": "ntfy (stack)",
       "name": "ntfy",
-      "description": "ntfy - push notifications as an HTTP primitive: `curl -d \"backup done\" https://your-domain/alerts` and every subscribed phone (iOS/Android apps) and browser gets it. Topics, priorities, attachments, scheduled delivery - one tiny Go binary.",
+      "description": "ntfy - push notifications as an HTTP primitive: `curl -d \"backup done\" https://your-domain/alerts` and every subscribed phone (iOS/Android apps) and browser gets it. Topics, priorities, attachments, scheduled delivery - one tiny Go binary.\n\nSource: https://github.com/binwiederhier/ntfy",
       "categories": [
         "Monitoring Analytics"
       ],
@@ -18476,7 +18476,7 @@
         "Network"
       ],
       "description": "Network UPS Tools server",
-      "image": "upshift/nut-upsd",
+      "image": "upshift/nut-upsd:latest",
       "name": "nuts",
       "platform": "linux",
       "ports": [
@@ -19563,7 +19563,7 @@
       "name": "oracle",
       "description": "Oracle Database Free (the 26ai line) - the actual Oracle Database, free for development AND production under the Oracle Free Use Terms and Conditions, within software-enforced caps: 2 cores, 2 GB RAM, 12 GB user data, one instance per",
       "categories": [
-        "Databases"
+        "Database"
       ],
       "platform": "linux",
       "repository": {
@@ -19874,8 +19874,8 @@
       "image": "lscr.io/linuxserver/overseerr:latest",
       "categories": [
         "Downloaders",
-        "Network Other",
-        "Mediaapp Video",
+        "Other",
+        "Video",
         "Tools"
       ],
       "ports": [
@@ -20581,7 +20581,7 @@
       "name": "percona-server",
       "description": "Percona Server for MySQL - a free, fully MySQL-compatible drop-in with extra instrumentation (detailed `INFORMATION_SCHEMA` and `PERFORMANCE_SCHEMA` tables), improved diagnostics, and performance enhancements.",
       "categories": [
-        "Databases"
+        "Database"
       ],
       "platform": "linux",
       "repository": {
@@ -20619,7 +20619,7 @@
       "name": "percona-xtradb-cluster",
       "description": "Percona XtraDB Cluster - synchronous, multi-primary MySQL high availability built on Galera.",
       "categories": [
-        "Databases"
+        "Database"
       ],
       "platform": "linux",
       "repository": {
@@ -20834,7 +20834,7 @@
       "note": "Portainer App Templates by <a href='https://www.technorabilia.com' target='_blank'>Technorabilia</a>, based on data provided by <a href='https://www.linuxserver.io' target='_blank'>LinuxServer.io</a>.</p><p>Ensure to create the following volume directories on the host file system, or modify the paths in the volume mapping section under the advanced options below, as needed.</p><p>mkdir -p /srv/lsio/phpmyadmin/config</p>",
       "description": "[Phpmyadmin](https://github.com/phpmyadmin/phpmyadmin/) is a free software tool written in PHP, intended to handle the administration of MySQL over the Web. phpMyAdmin supports a wide range of operations on MySQL and MariaDB.",
       "categories": [
-        "Databases"
+        "Database"
       ],
       "platform": "linux",
       "logo": "https://raw.githubusercontent.com/linuxserver/docker-templates/master/linuxserver.io/img/phpmyadmin-logo.png",
@@ -21041,7 +21041,7 @@
           "name": "PGID"
         }
       ],
-      "image": "jokobsk/pi.alert",
+      "image": "jokobsk/pi.alert:latest",
       "logo": "https://raw.githubusercontent.com/pucherot/Pi.Alert/main/docs/img/1_devices.jpg",
       "name": "pi.alert",
       "platform": "linux",
@@ -21611,9 +21611,9 @@
       "image": "linuxserver/plex:latest",
       "network": "host",
       "categories": [
-        "Mediaserver Video",
-        "Mediaserver Music",
-        "Mediaserver Photos"
+        "Video",
+        "Music",
+        "Photos"
       ],
       "privileged": true,
       "ports": [],
@@ -22355,7 +22355,7 @@
       "image": "stilliard/pure-ftpd:hardened",
       "network": "host",
       "categories": [
-        "Network Other",
+        "Other",
         "Utilities"
       ],
       "ports": [
@@ -23272,7 +23272,7 @@
       "categories": [
         "Backup",
         "Cloud",
-        "Network Other",
+        "Other",
         "Tools"
       ],
       "ports": [],
@@ -23349,7 +23349,7 @@
       "image": "ghcr.io/linuxserver/readarr:nightly",
       "categories": [
         "Downloaders",
-        "Mediaapp Books"
+        "Books"
       ],
       "ports": [
         "8787/tcp"
@@ -23803,7 +23803,7 @@
         "Presentation"
       ],
       "description": "It is an open source HTML presentation framework. It enables anyone with a web browser to create fully featured and beautiful presentations for free | Production Mode",
-      "image": "cloudogu/reveal.js",
+      "image": "cloudogu/reveal.js:latest",
       "logo": "https://pbs.twimg.com/profile_images/1260911777929400325/_ClbHpsz_400x400.jpg",
       "name": "revealjs",
       "platform": "linux",
@@ -24359,7 +24359,7 @@
       ],
       "platform": "linux",
       "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/scality-s3.png",
-      "image": "scality/s3server",
+      "image": "scality/s3server:latest",
       "ports": [
         "8000/tcp"
       ],
@@ -25028,7 +25028,7 @@
       "image": "linuxserver/sickrage:latest",
       "categories": [
         "Downloaders",
-        "Mediaapp Video"
+        "Video"
       ],
       "ports": [
         "8081/tcp"
@@ -25567,7 +25567,7 @@
       "categories": [
         "Network"
       ],
-      "description": "Speedtest Tracker is a self-hosted internet performance tracking application that runs speedtest checks against Ookla's Speedtest service.",
+      "description": "Speedtest Tracker is a self-hosted internet performance tracking application that runs speedtest checks against Ookla's Speedtest service.\n\nSource: https://github.com/alexjustesen/speedtest-tracker",
       "logo": "https://raw.githubusercontent.com/linuxserver/docker-templates/master/linuxserver.io/img/speedtest-tracker-logo.png",
       "name": "speedtest-tracker",
       "platform": "linux",
@@ -25782,7 +25782,7 @@
       "name": "mssql",
       "description": "Official SQL Server on Linux container (SQL Server 2025), Express edition by default - the edition Microsoft licenses for production at no cost. Single node + 10 GB volume, internal-only (databases never get a public domain).",
       "categories": [
-        "Databases"
+        "Database"
       ],
       "platform": "linux",
       "repository": {
@@ -25852,7 +25852,7 @@
       "note": "Portainer App Templates by <a href='https://www.technorabilia.com' target='_blank'>Technorabilia</a>, based on data provided by <a href='https://www.linuxserver.io' target='_blank'>LinuxServer.io</a>.</p><p>Ensure to create the following volume directories on the host file system, or modify the paths in the volume mapping section under the advanced options below, as needed.</p><p>mkdir -p /srv/lsio/sqlitebrowser/config</p>",
       "description": "[DB Browser for SQLite](https://sqlitebrowser.org/) is a high quality, visual, open source tool to create, design, and edit database files compatible with SQLite.",
       "categories": [
-        "Databases"
+        "Database"
       ],
       "platform": "linux",
       "logo": "https://raw.githubusercontent.com/linuxserver/docker-templates/master/linuxserver.io/img/sqlitebrowser-banner.png",
@@ -27023,7 +27023,7 @@
     {
       "categories": [
         "Other",
-        "Tool"
+        "Tools"
       ],
       "description": "SurrealDB is an end-to-end cloud native database for web, mobile, serverless, jamstack, backend, and traditional applications.",
       "image": "surrealdb/surrealdb:latest",
@@ -27483,7 +27483,7 @@
     {
       "categories": [
         "Productivity",
-        "Devtools"
+        "Dev Tools"
       ],
       "description": "Tabby is an infinitely customizable cross-platform terminal app for local shells, serial, SSH and Telnet connections.",
       "logo": "https://tabby.sh/32bf32ff6c87e8d18932.svg",
@@ -28149,7 +28149,7 @@
         "Security",
         "Tools"
       ],
-      "description": "Cloud-Native Networking Stack That Just Works.",
+      "description": "Cloud-Native Networking Stack That Just Works.\n\nSource: https://github.com/traefik/traefik",
       "image": "traefik:latest",
       "logo": "https://raw.githubusercontent.com/pi-hosted/pi-hosted/master/images/traefik.png",
       "name": "traefik",
@@ -30007,10 +30007,10 @@
       "title": "vsftpd FTP Server",
       "description": "Secure, fast FTP server for UNIX-like systems",
       "logo": "https://mediadepot.github.io/templates/img/pureftpd-icon.jpg",
-      "image": "delfer/alpine-ftp-server",
+      "image": "delfer/alpine-ftp-server:latest",
       "network": "host",
       "categories": [
-        "Network Other",
+        "Other",
         "Utilities"
       ],
       "ports": [
@@ -30139,7 +30139,7 @@
       "note": "<a target='_blank' href='https://containrrr.dev/watchtower/'>Application documentation \ud83d\uddd7</a>",
       "logo": "https://raw.githubusercontent.com/shmolf/portainer-templates/main/assets/logos/watchtower-logo.png",
       "platform": "linux",
-      "image": "containrrr/watchtower",
+      "image": "containrrr/watchtower:latest",
       "ports": [
         "9001/tcp"
       ],
@@ -30815,7 +30815,7 @@
       "title": "Wizarr",
       "description": " Wizarr is an advanced user invitation and management system for Jellyfin, Plex, Emby etc. ",
       "logo": "https://mediadepot.github.io/templates/img/wizarr-logo.png",
-      "image": "ghcr.io/wizarrrr/wizarr",
+      "image": "ghcr.io/wizarrrr/wizarr:latest",
       "categories": [
         "Tools"
       ],
@@ -31322,7 +31322,7 @@
         "Music",
         "Monitoring"
       ],
-      "description": "YourSpotify is a self-hosted application that tracks what you listen and offers you a dashboard to explore statistics about it!",
+      "description": "YourSpotify is a self-hosted application that tracks what you listen and offers you a dashboard to explore statistics about it!\n\nSource: https://github.com/Yooooomi/your_spotify",
       "name": "your_spotify",
       "platform": "linux",
       "repository": {
@@ -31598,7 +31598,7 @@
           "name": "INIT_PASSWORD"
         }
       ],
-      "image": "zusam/zusam",
+      "image": "zusam/zusam:latest",
       "logo": "https://github.com/zusam/zusam/raw/master/app/src/assets/zusam_logo.png",
       "name": "Zusam",
       "platform": "linux",
