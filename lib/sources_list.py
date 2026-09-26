@@ -20,8 +20,8 @@ KINDS = (COLLECTION, APP)
 # A source name becomes a file name, so keep it to something unambiguous
 NAME_PATTERN = re.compile(r'^[a-z0-9][a-z0-9_-]*$')
 
-# Enough for a container plus a stack, or a plain plus a GPU build; more is a collection
-MAX_APP_TEMPLATES = 5
+# One app, one template: an approved row must not be able to grow entries nobody reviewed
+MAX_APP_TEMPLATES = 1
 
 class Source(NamedTuple):
   """One usable row of sources.csv"""

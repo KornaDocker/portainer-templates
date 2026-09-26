@@ -6,13 +6,16 @@ This repo compiles Portainer app templates from lots of [sources](../sources.csv
 
 ## Adding your app
 
-If you've built a self-hosted app and want it in the list, you have two options. The first is much less hassle for you, and it's the one we'd recommend.
+The easiest way is to keep the template in your own repo. We pull it in every day, so you can update it whenever you like, without needing another PR here.
 
-### Option 1: publish your own template (recommended)
+1. Add a `portainer-template.json` file to your repo, containing a single template
+2. Add a row to the bottom of [`sources.csv`](../sources.csv) with a name, the raw URL, your repo URL, and `app`
 
-Keep the template **in your own repo**, and tell us where to find it. We re-fetch it every day, so after the one PR that registers it you never need to come back here again - edit your own file, and the change is live within 24 hours.
+```csv
+my_app, https://raw.githubusercontent.com/you/my-app/main/portainer-template.json, https://github.com/you/my-app/, app
+```
 
-**1.** Add a JSON file to your repo (`portainer-template.json` is a good name). A single app is just the template object on its own:
+Your template needs a `type`, `title`, `description`, and either an `image` (for a container) or a `repository` pointing at a compose file (for a stack). It's also worth including a `logo`, `categories`, `platform`, `restart_policy` and a short `note` on getting started, plus whatever `ports`, `volumes` and `env` your app needs. The full format is in [Portainer's docs](https://docs.portainer.io/advanced/app-templates/format), but here's an example:
 
 ```json
 {
@@ -31,54 +34,11 @@ Keep the template **in your own repo**, and tell us where to find it. We re-fetc
 }
 ```
 
-**2.** Check it, by pointing the validator at your raw URL:
+Rather not host it yourself? You can drop a JSON file into [`sources/local/`](../sources/local) instead (and any compose file into [`sources/stacks/`](../sources/stacks)), but you'll need a new PR here each time you want to change it.
 
-```bash
-python lib/validate_sources.py https://raw.githubusercontent.com/you/my-app/main/portainer-template.json
-```
+## Adding a template list
 
-**3.** Add one row to the bottom of [`sources.csv`](../sources.csv), ending in `app`:
-
-```csv
-my_app, https://raw.githubusercontent.com/you/my-app/main/portainer-template.json, https://github.com/you/my-app/, app
-```
-
-That's `name, url, maintainer, kind`. The name has to be unique and lowercase (it becomes a file name), the URL is the raw JSON, and the maintainer link is where people should report problems with your app.
-
-A few things worth knowing:
-
-- **Point at a branch, not a tag or commit SHA**, otherwise your template freezes and the whole point is lost.
-- **Your copy wins.** When your app also appears in one of the big collections, yours is the one we publish - you know your own app best.
-- **Up to 5 templates per app source**, so you can ship a container and a stack, or a plain and a GPU build. More than that is a collection, see below.
-- **It has to be your own app.** Registering someone else's is what the collections are for.
-- **Compose stacks stay in your repo too.** Use `"type": 3` and point `repository` at your own compose file, and there's nothing for us to keep in sync:
-  ```json
-  { "type": 3, "title": "My App", "description": "...",
-    "repository": { "url": "https://github.com/you/my-app", "stackfile": "docker-compose.yml" } }
-  ```
-- **Already sent us a template?** If your app is currently in [`sources/local/`](../sources/local), delete it in the same PR that adds your row. Local copies beat everything, so leaving it there means your updates are silently ignored. The build warns when that happens, but it's easier to just remove it.
-
-### Option 2: let us host it
-
-If you'd rather not keep a file in your own repo, drop a JSON file into [`sources/local/`](../sources/local) instead, matching [Portainer's template format](https://docs.portainer.io/advanced/app-templates/format). A docker-compose stack goes in [`sources/stacks/`](../sources/stacks), with your template pointing at it.
-
-The catch is that it becomes ours to maintain, and every change to it needs another PR from you. Fine for a one-off, annoying if your app moves quickly.
-
-## Maintaining a whole list of templates
-
-If you publish a template list covering **lots of apps**, add it to [`sources.csv`](../sources.csv) with `collection` as the kind (or leave the kind blank, which means the same thing):
-
-```csv
-your_templates, https://raw.githubusercontent.com/you/templates/main/templates.json, https://github.com/you/templates/, collection
-```
-
-Collections are kept in the order they're listed, and the first one listed wins when the same app turns up in several. Overall, duplicates are settled in this order:
-
-1. `sources/local/` - the copies we maintain
-2. `app` sources - the author's own template for their own app
-3. `collection` sources, in the order they appear in `sources.csv`
-
-More detail on all of this is in the [Editing](README.md#editing) section of the README.
+If you maintain a list covering lots of apps, add it to [`sources.csv`](../sources.csv) in the same way, but with `collection` at the end instead of `app`.
 
 ## Fixing a broken template
 
@@ -125,12 +85,6 @@ The following checks will run automatically on opened PRs, but you can check thi
 make install_requirements   # one-time: install deps
 make validate_sources       # validate your templates, stacks + sources list
 make                        # or build the whole thing end-to-end
-```
-
-If you're publishing your own template, you can check it straight from its URL, without cloning anything into this repo:
-
-```bash
-python lib/validate_sources.py https://raw.githubusercontent.com/you/my-app/main/portainer-template.json
 ```
 
 <!--

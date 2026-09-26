@@ -27,8 +27,8 @@ def download(source):
 
     # 'app' means one author's own app, not a back door for an unreviewed list
     if source.is_app and len(templates) > sources_list.MAX_APP_TEMPLATES:
-        log.warning(f'Skipping {source.name}: an app source may hold at most '
-                    f'{sources_list.MAX_APP_TEMPLATES} templates, but this one has '
+        log.warning(f'Skipping {source.name}: an app source may publish '
+                    f'{sources_list.MAX_APP_TEMPLATES} template, but this one has '
                     f'{len(templates)}, so it belongs in sources.csv as a collection')
         return False
 

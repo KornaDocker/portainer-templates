@@ -111,9 +111,8 @@ def check_url(url):
     if not is_app:
         return [], []  # the shape is all the build needs from a collection
     if len(templates) > sources_list.MAX_APP_TEMPLATES:
-        return [f'{url}: holds {len(templates)} templates, so it can only be listed as a '
-                f'collection, not an app source (which may carry at most '
-                f'{sources_list.MAX_APP_TEMPLATES})'], []
+        return [f'{url}: holds {len(templates)} templates, but an app source may publish only '
+                f'{sources_list.MAX_APP_TEMPLATES}, so it has to be listed as a collection'], []
     return check_templates(url, templates)
 
 def check_stack(path):

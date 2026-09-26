@@ -102,7 +102,7 @@ If the same app appears more than once, duplicates are settled in this order:
 2. `app` sources - the author's own template for their own app
 3. `collection` sources, in the order they're listed in `sources.csv`
 
-An `app` source may carry up to 5 templates, so an author can ship a container and a stack, or a plain and a GPU build. If one stops resolving it's simply left out of that build, whereas a missing collection stops the build, since it would take hundreds of apps with it.
+An `app` source carries exactly one template, so a row approved once can't grow entries nobody reviewed - an author shipping variants adds a row per variant. If an app source stops resolving it's simply left out of that build, whereas a missing collection stops the build, since it would take hundreds of apps with it.
 
 ### Adding a Template / Template list
 Alternatively, place your template file within the [`sources/local/`](https://github.com/Lissy93/portainer-templates/tree/main/sources/local) directory, and it will be automatically combined into the main `template.json`. Be sure that your template corresponds to [Portainer's App Template JSON Format](https://docs.portainer.io/advanced/app-templates/format). Note that anything in there becomes ours to maintain, and needs a PR for every change - so if it's your own app, publishing it from your own repo as an `app` source is usually the better deal.
