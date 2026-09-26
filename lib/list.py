@@ -2,10 +2,10 @@ import json
 import html
 import urllib.parse
 import os
-import csv
 import re
 import sys
 
+import sources_list
 from log import get_logger, banner
 
 log = get_logger()
@@ -14,15 +14,11 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_dir = os.path.dirname(current_dir)
 readme_path = os.path.join(project_dir, '.github/README.md')
 templates_path = os.path.join(project_dir, 'templates.json')
-sources_path = os.path.join(project_dir, 'sources.csv')
+external_dir = os.path.join(project_dir, 'sources/external')
 
 def load_json_file(file_path):
     with open(file_path, 'r') as file:
         return json.load(file)
-
-def load_csv_file(file_path):
-    with open(file_path, 'r') as file:
-        return list(csv.reader(file))
 
 def slugify(title: str):
     baseUrl = 'https://portainer-templates.as93.net'
@@ -50,25 +46,45 @@ def generate_app_list():
       markdown_content += f"{index+1}. {logo}**[{name}]({slugify(name)} '{description}')** {maintainer_md_link}\n"
   return markdown_content
 
-def generate_sources_list():
-    sources = load_csv_file(sources_path)
-    markdown_content = ''
+def github_user(*urls):
+    """The GitHub account behind a source, for its avatar: from its url, else its maintainer"""
+    for url in urls:
+        parsed = urllib.parse.urlparse(url or '')
+        path_parts = [p for p in parsed.path.split('/') if p]
+        if parsed.hostname in ('github.com', 'raw.githubusercontent.com') and path_parts:
+            return path_parts[0]
+    return None
 
-    count = 0
-    for source in sources:
-        if len(source) > 1 and source[1].strip():
-          count += 1
-          url = source[1].strip()
-          parsed_url = urllib.parse.urlparse(url)
-          path_parts = [p for p in parsed_url.path.split('/') if p]
-          if parsed_url.hostname in ('github.com', 'raw.githubusercontent.com') and path_parts:
-            username = path_parts[0]
-            avatar = f'<img src="https://github.com/{username}.png?size=40" width="26" height="26" />'
-            markdown_content += f"{count}. {avatar} [template]({url}) by [@{username}](https://github.com/{username})\n"
-          else:
-            markdown_content += f"{count}. [template]({url})\n"
+def source_credit(source, label):
+    """One line of a README credit list: avatar, link and the author's handle"""
+    username = github_user(source.url, source.maintainer)
+    if not username:
+        return f'[{label}]({source.url})'
+    avatar = f'<img src="https://github.com/{username}.png?size=40" width="26" height="26" />'
+    return (f'{avatar} [{label}]({source.url}) by '
+            f'[@{username}](https://github.com/{username})')
 
-    return markdown_content
+def app_label(source):
+    """An app's own title from what was downloaded, so the credit reads Cantinarr not cantinarr"""
+    try:
+        templates = load_json_file(os.path.join(external_dir, source.filename))['templates']
+        titles = [t['title'] for t in templates if isinstance(t, dict) and t.get('title')]
+    except (OSError, ValueError, KeyError):
+        titles = []
+    return titles[0] if titles else source.name
+
+def generate_sources_list(sources):
+    """The collections: other people's maintained lists of templates"""
+    return ''.join(f'{index}. {source_credit(source, "template")}\n'
+                   for index, source in enumerate(sources, start=1))
+
+def generate_app_sources_list(sources):
+    """The individual apps, each published and kept up to date by its own author"""
+    if not sources:
+        return ('_None yet - if you maintain a self-hosted app, '
+                '[add yours](CONTRIBUTING.md#option-1-publish-your-own-template-recommended)._')
+    return ''.join(f'{index}. {source_credit(source, app_label(source))}\n'
+                   for index, source in enumerate(sources, start=1))
 
 def insert_content_between_markers(file_path, start_marker, end_marker, content_to_insert):
     with open(file_path, 'r') as file:
@@ -95,8 +111,10 @@ def insert_content_between_markers(file_path, start_marker, end_marker, content_
 
 banner('List', 'Render app + source lists into the README')
 
-# Insert sources list into readme
-sources_md = generate_sources_list()
+all_sources = sources_list.load()
+
+# Insert the collection sources list into readme
+sources_md = generate_sources_list([s for s in all_sources if not s.is_app])
 insert_content_between_markers(
   readme_path,
   '<!-- auto-insert-sources:start -->',
@@ -104,6 +122,16 @@ insert_content_between_markers(
   sources_md,
 )
 log.info(f'Rendered {sources_md.count(chr(10))} sources into README')
+
+# Insert the individual app sources list into readme
+app_sources = [s for s in all_sources if s.is_app]
+insert_content_between_markers(
+  readme_path,
+  '<!-- auto-insert-app-sources:start -->',
+  '<!-- auto-insert-app-sources:end -->',
+  generate_app_sources_list(app_sources),
+)
+log.info(f'Rendered {len(app_sources)} individual app sources into README')
 
 # Insert app list into readme
 apps_md = generate_app_list()

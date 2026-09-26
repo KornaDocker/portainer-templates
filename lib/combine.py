@@ -1,4 +1,3 @@
-import csv
 import json
 import os
 import re
@@ -8,6 +7,7 @@ from collections import Counter
 
 import jsonschema
 
+import sources_list
 from log import get_logger, banner
 
 log = get_logger()
@@ -19,6 +19,8 @@ with open(os.path.join(BASE_DIR, 'Schema.json')) as f:
   SCHEMA = json.load(f)
 FORMAT_CHECKER = jsonschema.FormatChecker()
 TEMPLATE_KEYS = set(SCHEMA['properties']['templates']['items']['properties'])
+ITEM_VALIDATOR = jsonschema.Draft7Validator(SCHEMA['properties']['templates']['items'],
+                                            format_checker=FORMAT_CHECKER)
 
 TYPE_LABELS = {1: 'container', 2: 'swarm', 3: 'stack', 4: 'edge'}
 
@@ -53,11 +55,10 @@ def template_rank(t, pinned=None):
   priority, then completeness."""
   return (t['_source'] == pinned, -t['_priority'], template_score(t))
 
-def listed_sources():
-  """File names of the external sources in sources.csv, in the order listed."""
-  with open(os.path.join(BASE_DIR, 'sources.csv')) as f:
-    return [row[0].strip() + '.json' for row in csv.reader(f)
-            if len(row) > 1 and row[0].strip() and row[1].strip()]
+def source_priority(sources):
+  """File name -> dedup priority, lower wins: app sources first, then sources.csv order"""
+  ordered = [s for s in sources if s.is_app] + [s for s in sources if not s.is_app]
+  return {s.filename: i for i, s in enumerate(ordered, start=1)}
 
 def load_overrides():
   """Per-template fixes from overrides.json, keyed by (normalized title, type)."""
@@ -78,9 +79,9 @@ def pinned_source(overrides, key):
   prefer = overrides.get(key, {}).get('prefer')
   return f'{prefer}.json' if prefer else None
 
-def load_sources():
+def load_sources(sources):
   """Load and merge all template JSON files from sources/local/ and sources/external/."""
-  rank = {name: i for i, name in enumerate(listed_sources(), start=1)}
+  rank = source_priority(sources)
   templates = []
   local_dir = os.path.join(SOURCES_DIR, 'local')
   external_dir = os.path.join(SOURCES_DIR, 'external')
@@ -244,6 +245,12 @@ def normalize_template_fields(templates):
       log.warning(f'Skipping unnormalizable template: {t.get("title", "<no title>")} ({err})')
   return normalized
 
+def schema_errors(t):
+  """Schema violations in one template, so a bad entry is dropped instead of failing the build"""
+  probe = {k: v for k, v in t.items() if not k.startswith('_')}
+  probe.setdefault('id', 1)  # combine assigns real ids at write time
+  return [e.message for e in ITEM_VALIDATOR.iter_errors(probe)]
+
 def is_valid_template(t):
   """Check a template has the required fields for its type."""
   if not (isinstance(t.get('title'), str) and t['title'].strip()):
@@ -300,6 +307,11 @@ def deduplicate_and_normalize(templates, overrides=None):
   for t in templates:
     if not is_valid_template(t):
       log.warning(f'Skipping invalid template: {t.get("title", "<no title>")}')
+      continue
+    problems = schema_errors(t)
+    if problems:
+      log.warning(f'Skipping template that fails the schema: {t["title"]} '
+                  f'from {t["_source"]} ({problems[0]})')
       continue
     key = (normalize_string(t['title']), t.get('type', 1))
     pinned = pinned_source(overrides, key)
@@ -375,18 +387,37 @@ def audit_overrides(templates, overrides):
     elif max(candidates, key=template_rank) is max(candidates, key=lambda t: template_rank(t, pinned)):
       log.warning(f'Redundant override: normal priority already picks {prefer} for {where}')
 
-def missing_sources():
-  """Names from sources.csv with no downloaded file in sources/external/."""
+def audit_app_sources(templates, sources):
+  """Warn when a local copy shadows an app source, since the author's updates never publish"""
+  local = {}
+  for t in templates:
+    if t['_priority'] == 0 and isinstance(t.get('title'), str):
+      local.setdefault((normalize_string(t['title']), t.get('type', 1)), t['_source'])
+  app_files = {s.filename for s in sources if s.is_app}
+  for t in templates:
+    if t['_source'] not in app_files or not isinstance(t.get('title'), str):
+      continue
+    shadowed_by = local.get((normalize_string(t['title']), t.get('type', 1)))
+    if shadowed_by:
+      log.warning(f'{t["title"]} from the {t["_source"]} app source is shadowed by the '
+                  f'copy in sources/local/{shadowed_by}, so the author\'s updates never '
+                  'get published. Delete the local copy to let them through.')
+
+def missing_sources(sources, kind):
+  """Sources of one kind that sources.csv lists but nothing was downloaded for."""
   external_dir = os.path.join(SOURCES_DIR, 'external')
   present = set(os.listdir(external_dir)) if os.path.isdir(external_dir) else set()
-  return set(listed_sources()) - present
+  return sorted(s.name for s in sources if s.kind == kind and s.filename not in present)
 
 if __name__ == '__main__':
   banner('Combine', 'Merge, normalize + dedupe template sources into templates.json')
   overrides = load_overrides()
-  raw = normalize_template_fields(load_sources())
+  sources = sources_list.load()
+  raw = normalize_template_fields(load_sources(sources))
   sources_count = len({t.get('_source') for t in raw})
   log.info(f'Normalized {len(raw)} templates from {sources_count} sources')
+  if any(s.is_app for s in sources):
+    audit_app_sources(raw, sources)
   if overrides:
     log.info(f'Applying {len(overrides)} template overrides')
     audit_overrides(raw, overrides)
@@ -412,10 +443,15 @@ if __name__ == '__main__':
       previous = len(json.load(f)['templates'])
   except (OSError, ValueError, KeyError):
     previous = 0
-  # A failed source download must not silently shrink the published list
-  missing = missing_sources()
+  # A missing app source only costs its own app, so it's left out rather than fatal
+  unavailable = missing_sources(sources, sources_list.APP)
+  if unavailable:
+    log.warning(f'{len(unavailable)} app sources were not downloaded, so they are left '
+                f'out of this build: {", ".join(unavailable)}')
+  # A failed collection download must not silently shrink the published list
+  missing = missing_sources(sources, sources_list.COLLECTION)
   if missing and not os.environ.get('ALLOW_SHRINK'):
-    log.error(f'Refusing to write: missing external sources: {", ".join(sorted(missing))}. '
+    log.error(f'Refusing to write: missing external sources: {", ".join(missing)}. '
               'Set ALLOW_SHRINK=1 if this is intentional.')
     sys.exit(1)
   if len(templates) < previous * 0.9 and not os.environ.get('ALLOW_SHRINK'):

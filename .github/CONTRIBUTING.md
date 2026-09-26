@@ -4,13 +4,41 @@ Thanks for wanting to help out - it's genuinely appreciated! 🙌
 
 This repo compiles Portainer app templates from lots of [sources](../sources.csv) into a single `templates.json`. Most contributions are either adding apps to that list, or improving the tooling around it.
 
-## Adding apps or stacks
+## Adding your app
 
-- **Maintain your own template list?** Add its name and raw URL to the bottom of [`sources.csv`](../sources.csv), and the next build will pull it in. Sources are in priority order, so the first one listed wins when the same app appears in several.
-- **Just have a template or two?** Drop a JSON file into [`sources/local/`](../sources/local). It needs to match [Portainer's template format](https://docs.portainer.io/advanced/app-templates/format) - there's a [`Schema.json`](../Schema.json) you can check against.
-- **Adding a docker-compose stack?** Put the compose file in [`sources/stacks/`](../sources/stacks) and point your template at it.
+The easiest way is to keep the template in your own repo. We pull it in every day, so you can update it whenever you like, without needing another PR here.
 
-More detail on all of this is in the [Editing](README.md#editing) section of the README.
+1. Add a `portainer-template.json` file to your repo, containing a single template
+2. Add a row to the bottom of [`sources.csv`](../sources.csv) with a name, the raw URL, your repo URL, and `app`
+
+```csv
+my_app, https://raw.githubusercontent.com/you/my-app/main/portainer-template.json, https://github.com/you/my-app/, app
+```
+
+Your template needs a `type`, `title`, `description`, and either an `image` (for a container) or a `repository` pointing at a compose file (for a stack). It's also worth including a `logo`, `categories`, `platform`, `restart_policy` and a short `note` on getting started, plus whatever `ports`, `volumes` and `env` your app needs. The full format is in [Portainer's docs](https://docs.portainer.io/advanced/app-templates/format), but here's an example:
+
+```json
+{
+  "type": 1,
+  "title": "My App",
+  "description": "What it does, in a sentence or two.",
+  "categories": ["Productivity"],
+  "platform": "linux",
+  "logo": "https://raw.githubusercontent.com/you/my-app/main/logo.png",
+  "image": "ghcr.io/you/my-app:latest",
+  "restart_policy": "unless-stopped",
+  "ports": ["8080:8080/tcp"],
+  "volumes": [{ "container": "/app/data" }],
+  "env": [{ "name": "TZ", "label": "Timezone", "default": "UTC" }],
+  "note": "Anything people need to know to get it running."
+}
+```
+
+Rather not host it yourself? You can drop a JSON file into [`sources/local/`](../sources/local) instead (and any compose file into [`sources/stacks/`](../sources/stacks)), but you'll need a new PR here each time you want to change it.
+
+## Adding a template list
+
+If you maintain a list covering lots of apps, add it to [`sources.csv`](../sources.csv) in the same way, but with `collection` at the end instead of `app`.
 
 ## Fixing a broken template
 

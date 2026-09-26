@@ -1,10 +1,8 @@
 import os
-import csv
 import sys
-import time
-import requests
 import json
 
+import sources_list
 from log import get_logger, banner
 
 log = get_logger()
@@ -12,61 +10,38 @@ log = get_logger()
 dir = os.path.dirname(os.path.abspath(__file__))
 
 destination_dir = os.path.join(dir, '../sources/external')
-sources_list = os.path.join(dir, '../sources.csv')
 
-# Downloads the templates file from a given URL, to the local destination
-def download(url: str, filename: str, maintainer: str):
-    file_path = os.path.join(destination_dir, filename)
-    log.info(f'Downloading {url}')
-    sourceJson = None
-    for attempt in range(3):
-        try:
-            r = requests.get(url, timeout=30)
-            r.raise_for_status()
-            sourceJson = r.json()
-            break
-        except (requests.RequestException, ValueError) as err:
-            if attempt == 2:
-                log.warning(f'Skipping source due to an error: {url} ({err})')
-                return False
-            time.sleep(2 ** attempt)
+# Downloads the templates file for a given source, to the local destination
+def download(source):
+    log.info(f'Downloading {source.url}')
+    payload, error = sources_list.fetch_json(source.url)
+    if error:
+        log.warning(f'Skipping source due to an error: {source.url} ({error})')
+        return False
 
-    # Handle sources without valid data
-    if isinstance(sourceJson, list):
-        sourceJson = {'templates': sourceJson}
-    templates = sourceJson.get('templates') if isinstance(sourceJson, dict) else None
-    if not isinstance(templates, list) or not templates:
-        log.warning(f'Skipping source with no templates: {url}')
+    # An app source may publish a bare template object, since it's just the one
+    templates = sources_list.templates_in(payload, allow_bare=source.is_app)
+    if not templates:
+        log.warning(f'Skipping source with no templates: {source.url}')
+        return False
+
+    # 'app' means one author's own app, not a back door for an unreviewed list
+    if source.is_app and len(templates) > sources_list.MAX_APP_TEMPLATES:
+        log.warning(f'Skipping {source.name}: an app source may publish '
+                    f'{sources_list.MAX_APP_TEMPLATES} template, but this one has '
+                    f'{len(templates)}, so it belongs in sources.csv as a collection')
         return False
 
     # Add maintainer field to each template
     for t in templates:
-        if isinstance(t, dict) and maintainer:
-            t['maintainer'] = maintainer
+        if isinstance(t, dict) and source.maintainer:
+            t['maintainer'] = source.maintainer
 
+    file_path = os.path.join(destination_dir, source.filename)
     log.debug(f'Saving to {os.path.abspath(file_path)}')
     with open(file_path, 'w') as f:
-        json.dump(sourceJson, f, indent=2, sort_keys=False)
+        json.dump({'templates': templates}, f, indent=2, sort_keys=False)
     return True
-
-# Gets list of URLs to download from CSV file
-def get_source_list():
-  sources = []
-  seen = set()
-  with open(sources_list, mode='r') as file:
-      csvFile = csv.reader(file)
-      for lines in csvFile:
-        row = [col.strip() for col in lines]
-        if len(row) < 2 or not row[0] or not row[1]:
-          if any(row):
-            log.warning(f'Skipping malformed sources.csv row: {lines}')
-          continue
-        if row[0] in seen:
-          log.warning(f'Skipping duplicate source: {row[0]}')
-          continue
-        seen.add(row[0])
-        sources.append(row)
-  return sources
 
 # Create destination folder if not yet present
 if not os.path.exists(destination_dir):
@@ -74,13 +49,17 @@ if not os.path.exists(destination_dir):
 
 banner('Download', 'Fetch template sources listed in sources.csv')
 
-sources = get_source_list()
-failures = []
-for source in sources:
-  if not download(source[1], source[0] + '.json', source[2] if len(source) > 2 else ''):
-    failures.append(source[0])
+sources = sources_list.load()
+failures = [source for source in sources if not download(source)]
 
 log.info(f'Downloaded {len(sources) - len(failures)}/{len(sources)} sources')
-if failures:
-  log.error(f'Failed to download valid sources: {", ".join(failures)}')
+
+# A lost collection stops the build; a lost app source only costs its own app
+failed_apps = [source.name for source in failures if source.is_app]
+failed_collections = [source.name for source in failures if not source.is_app]
+if failed_apps:
+  log.warning(f'Leaving out {len(failed_apps)} unavailable app '
+              f'sources: {", ".join(failed_apps)}')
+if failed_collections:
+  log.error(f'Failed to download valid sources: {", ".join(failed_collections)}')
   sys.exit(1)

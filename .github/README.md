@@ -89,16 +89,28 @@ Running the `make` command will download all listed sources, parse them, and com
 _So, you only need to edit **either** the [`sources.csv`](https://github.com/Lissy93/portainer-templates/blob/main/sources.csv) file, **or** add your templates directly into the [`sources/local/`](https://github.com/Lissy93/portainer-templates/tree/main/sources/local) directory._
 
 ### Adding a new Source
-If you're maintaining your own list of Portainer templates, and would like them to be included, just add the URL to your template.json file to the bottom of [`sources.csv`](https://github.com/Lissy93/portainer-templates/blob/main/sources.csv), along with a name.
-When the action runs, it will download the content, parse it and add it to the final template.
-Sources are listed in priority order: if the same app appears in several sources, the one listed first is kept (anything in `sources/local/` beats them all).
+Every row in [`sources.csv`](https://github.com/Lissy93/portainer-templates/blob/main/sources.csv) is `name, url, maintainer, kind`, where `kind` is either:
+
+- `collection` - somebody's maintained list covering many apps (the default, if you leave it blank)
+- `app` - a single self-hosted app, published by its own author
+
+Add a row, and the next build downloads it, parses it and merges it into the final template. Because that happens every night, an `app` author only needs one PR here: from then on they edit the file in their own repo and the change shows up within a day.
+
+If the same app appears more than once, duplicates are settled in this order:
+
+1. `sources/local/` - the copies maintained in this repo
+2. `app` sources - the author's own template for their own app
+3. `collection` sources, in the order they're listed in `sources.csv`
+
+An `app` source carries exactly one template, so a row approved once can't grow entries nobody reviewed - an author shipping variants adds a row per variant. If an app source stops resolving it's simply left out of that build, whereas a missing collection stops the build, since it would take hundreds of apps with it.
 
 ### Adding a Template / Template list
-Alternatively, place your template file within the [`sources/local/`](https://github.com/Lissy93/portainer-templates/tree/main/sources/local) directory, and it will be automatically combined into the main `template.json`. Be sure that your template corresponds to [Portainer's App Template JSON Format](https://docs.portainer.io/advanced/app-templates/format).
+Alternatively, place your template file within the [`sources/local/`](https://github.com/Lissy93/portainer-templates/tree/main/sources/local) directory, and it will be automatically combined into the main `template.json`. Be sure that your template corresponds to [Portainer's App Template JSON Format](https://docs.portainer.io/advanced/app-templates/format). Note that anything in there becomes ours to maintain, and needs a PR for every change - so if it's your own app, publishing it from your own repo as an `app` source is usually the better deal.
 
 ### Validating Templates
 There is a schema defined in [`Schema.json`](https://github.com/Lissy93/portainer-templates/blob/main/Schema.json), which can be used to validate any Portainer template.
 Run `make validate` to ensure your template conforms to Portainer's App Template [specification](https://docs.portainer.io/advanced/app-templates/format).
+To check a template you host yourself, point the validator straight at its URL with `python lib/validate_sources.py <url>`.
 
 ### Maintaining your own Templates
 If you'd like to use this repo as a base, but maintain your own list of template, just fork the repository, and update `lissy93` with your username in the import URL.
@@ -928,6 +940,10 @@ If you'd like to use this repo as a base, but maintain your own list of template
 Full credit to the authors of the following templates.
 The main `templates.json` file is composes of these sources, along with the content of the [`sources`](https://github.com/Lissy93/portainer-templates/tree/main/sources) directory.
 
+### Template Collections
+
+Community-maintained lists, each covering many apps.
+
 <!-- auto-insert-sources:start -->
 1. <img src="https://github.com/portainer.png?size=40" width="26" height="26" /> [template](https://raw.githubusercontent.com/portainer/templates/v3/templates.json) by [@portainer](https://github.com/portainer)
 2. <img src="https://github.com/technorabilia.png?size=40" width="26" height="26" /> [template](https://raw.githubusercontent.com/technorabilia/portainer-templates/main/lsio/templates/templates.json) by [@technorabilia](https://github.com/technorabilia)
@@ -939,9 +955,17 @@ The main `templates.json` file is composes of these sources, along with the cont
 8. <img src="https://github.com/mikestraney.png?size=40" width="26" height="26" /> [template](https://raw.githubusercontent.com/mikestraney/portainer-templates/master/templates.json) by [@mikestraney](https://github.com/mikestraney)
 9. <img src="https://github.com/SelfhostedPro.png?size=40" width="26" height="26" /> [template](https://raw.githubusercontent.com/SelfhostedPro/selfhosted_templates/portainer-2.0/Template/template.json) by [@SelfhostedPro](https://github.com/SelfhostedPro)
 10. <img src="https://github.com/dnburgess.png?size=40" width="26" height="26" /> [template](https://raw.githubusercontent.com/dnburgess/self-hosted-template/master/template.json) by [@dnburgess](https://github.com/dnburgess)
-11. [template](https://deployable.sh/portainer/templates.json)
+11. <img src="https://github.com/deployable-sh.png?size=40" width="26" height="26" /> [template](https://deployable.sh/portainer/templates.json) by [@deployable-sh](https://github.com/deployable-sh)
 
 <!-- auto-insert-sources:end -->
+
+### Individual Apps
+
+Self-hosted apps whose own authors publish and maintain their Portainer template, which we pull in fresh every day.
+
+<!-- auto-insert-app-sources:start -->
+_None yet - if you maintain a self-hosted app, [add yours](CONTRIBUTING.md#option-1-publish-your-own-template-recommended)._
+<!-- auto-insert-app-sources:end -->
 
 </details>
 

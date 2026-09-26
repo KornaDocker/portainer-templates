@@ -118,6 +118,8 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          # Deep enough to diff sources.csv against the PR's base
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -131,6 +133,29 @@ jobs:
 
       - name: Validate sources.csv + overrides.json
         run: python lib/validate_sources.py sources.csv overrides.json
+
+      # Check source urls this PR changes: a collection the build can't read stops the nightly
+      - name: Validate newly added sources
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          # '|| true' since grep exits 1 when this PR only touches overrides.json
+          urls=$(git diff "$BASE_SHA" -- sources.csv \
+                 | grep '^+[^+]' | cut -c2- \
+                 | awk -F, '{ gsub(/[[:blank:]]/, "", $2)
+                              if ($2 ~ /^https?:\/\//) print $2 }' || true)
+          if [ -z "$urls" ]; then
+            echo "This PR changes no source urls, nothing to fetch."
+            exit 0
+          fi
+          status=0
+          for url in $urls; do
+            echo "--- Validating $url"
+            python lib/validate_sources.py "$url" || status=1
+          done
+          exit $status
 
   # When the tooling or schema changes: compile, self-check the schema, re-validate output
   scripts:
